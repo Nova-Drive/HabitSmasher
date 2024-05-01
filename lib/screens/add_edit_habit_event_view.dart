@@ -47,6 +47,13 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
     }
   }
 
+  @override
+  void dispose() {
+    commentController.dispose();
+    dateController.dispose();
+    super.dispose();
+  }
+
   Future<LocationData> locationService() async {
     Location location = Location();
     await location.requestPermission();
@@ -60,11 +67,19 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
         comment: commentController.text, date: date, habit: widget.habit);
 
     if (addLocation!) {
+      debugPrint('Adding location');
       locationService().then((LocationData place) {
         event.location = place;
       });
     }
 
+    //picture stuff goes here
+
+    _addEventToDb(event);
+    Navigator.pop(context);
+  }
+
+  void _addEventToDb(HabitEvent event) {
     FirebaseFirestore db = FirebaseFirestore.instance;
     db
         .collection("habits")
@@ -77,9 +92,7 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
           .collection("events")
           .add(event.toMap());
     });
-
     widget.addHabitEvent!(event);
-    Navigator.pop(context);
   }
 
   @override
@@ -109,6 +122,7 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
                   setDate: (date) {
                     setState(() {
                       this.date = date;
+                      dateController.text = date.toString().substring(0, 10);
                     });
                   }),
               Row(children: [

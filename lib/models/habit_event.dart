@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:habitsmasher/models/habit.dart';
 import 'package:location/location.dart';
 import 'package:uuid/uuid.dart';
@@ -35,7 +36,7 @@ class HabitEvent {
     return HabitEvent(
       id: map['id'],
       comment: map['comment'],
-      date: DateTime.parse(map['date']),
+      date: (map['date'] as Timestamp).toDate(),
       habit: habit,
       location: map['location'] != null
           ? LocationData.fromMap(map['location'])

@@ -3,7 +3,7 @@ import 'package:habitsmasher/buttons/weekday_button.dart';
 import 'package:habitsmasher/extensions.dart';
 import 'package:habitsmasher/models/habit.dart';
 import 'package:habitsmasher/models/habit_event.dart';
-import 'package:habitsmasher/sample_data/sample_data.dart';
+import 'package:habitsmasher/network/network.dart';
 import 'package:habitsmasher/screens/habit_event_list_view.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:collection/collection.dart';
@@ -134,7 +134,7 @@ class EventList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: makeSampleHabitEvents(),
+        future: getHabitEvents(widget.habit),
         builder: ((context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             List<HabitEvent> habitEvents = snapshot.data as List<HabitEvent>;

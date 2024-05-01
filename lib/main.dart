@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:habitsmasher/models/habit.dart';
-import 'package:habitsmasher/sample_data/sample_data.dart';
+import 'package:habitsmasher/network/network.dart';
 import 'package:habitsmasher/screens/habit_list_view.dart';
 import 'package:habitsmasher/screens/test_widget.dart';
 import 'package:habitsmasher/screens/today_view.dart';
@@ -15,60 +15,58 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const NavigationBarApp());
+  runApp(const HabitSmasherApp());
 }
 
-class NavigationBarApp extends StatelessWidget {
-  const NavigationBarApp({super.key});
+class HabitSmasherApp extends StatelessWidget {
+  const HabitSmasherApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(useMaterial3: true),
-      home: NavigationExample(),
+      home: const Navigation(),
     );
   }
 }
 
-class NavigationExample extends StatefulWidget {
-  NavigationExample({super.key});
-  final List<Habit> habits = sampleHabits;
-  final FirebaseFirestore db = FirebaseFirestore.instance;
+class Navigation extends StatefulWidget {
+  const Navigation({super.key});
 
   @override
-  State<NavigationExample> createState() => _NavigationExampleState();
+  State<Navigation> createState() => _NavigationState();
 }
 
-class _NavigationExampleState extends State<NavigationExample> {
+class _NavigationState extends State<Navigation> {
   int currentPageIndex = 0;
+  List<Habit> habits = [];
+  FirebaseFirestore db = FirebaseFirestore.instance;
 
   @override
   void initState() {
     super.initState();
-    widget.db.collection('habits').get().then((QuerySnapshot querySnapshot) {
-      for (var doc in querySnapshot.docs) {
-        setState(() {
-          widget.habits.add(Habit.fromMap(doc.data() as Map<String, dynamic>));
-        });
-      }
+    getHabits().then((list) {
+      setState(() {
+        habits = list;
+      });
     });
   }
 
   void addHabit(Habit habit) {
     setState(() {
-      widget.habits.add(habit);
+      habits.add(habit);
     });
-    widget.db.collection('habits').add(habit.toMap());
+    db.collection('habits').add(habit.toMap());
   }
 
   void editHabit(Habit newHabit, Habit oldHabit) {
     setState(() {
-      widget.db
+      db
           .collection('habits')
           .where('id', isEqualTo: oldHabit.id)
           .get()
           .then((QuerySnapshot querySnapshot) {
-        widget.db
+        db
             .collection('habits')
             .doc(querySnapshot.docs[0].id)
             .update(newHabit.toMap())
@@ -76,7 +74,7 @@ class _NavigationExampleState extends State<NavigationExample> {
                 onError: (error) =>
                     debugPrint('error updating habit with id ${oldHabit.id}'));
       });
-      widget.habits[widget.habits.indexOf(oldHabit)] = newHabit;
+      habits[habits.indexOf(oldHabit)] = newHabit;
     });
   }
 
@@ -84,21 +82,16 @@ class _NavigationExampleState extends State<NavigationExample> {
     setState(() {
       // Can potentially save a query by storing the document id in the habit object
       // or by querying the cache instead of the server
-      int index = widget.habits.indexOf(oldHabit);
-      widget.db
+      int index = habits.indexOf(oldHabit);
+      db
           .collection('habits')
-          .where('id', isEqualTo: widget.habits[index].id)
+          .where('id', isEqualTo: habits[index].id)
           .get()
           .then((QuerySnapshot querySnapshot) {
-        widget.db
-            .collection('habits')
-            .doc(querySnapshot.docs[0].id)
-            .delete()
-            .then(
-                (doc) => debugPrint(
-                    'deleted habit with id ${widget.habits[index].id}'),
-                onError: (error) => debugPrint(
-                    'error deleting habit with id ${widget.habits[index].id}'));
+        db.collection('habits').doc(querySnapshot.docs[0].id).delete().then(
+            (doc) => debugPrint('deleted habit with id ${habits[index].id}'),
+            onError: (error) =>
+                debugPrint('error deleting habit with id ${habits[index].id}'));
 
         // querySnapshot.docs[0].reference.delete().then(
         //     (doc) => print('deleted habit with id ${widget.habits[index].id}'),
@@ -106,7 +99,7 @@ class _NavigationExampleState extends State<NavigationExample> {
         //         'error deleting habit with id ${widget.habits[index].id}'));
       });
 
-      widget.habits.removeAt(index);
+      habits.removeAt(index);
     });
   }
 
@@ -141,13 +134,11 @@ class _NavigationExampleState extends State<NavigationExample> {
       body: <Widget>[
         /// Today page
         TodayView(
-            habits: widget.habits,
-            editHabit: editHabit,
-            deleteHabit: deleteHabit),
+            habits: habits, editHabit: editHabit, deleteHabit: deleteHabit),
 
         /// Habits page
         HabitListView(
-            habits: widget.habits,
+            habits: habits,
             addHabit: addHabit,
             editHabit: editHabit,
             deleteHabit: deleteHabit),
