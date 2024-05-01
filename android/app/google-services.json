@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "222316442214",
+    "project_id": "habitsmasher-a16ca",
+    "storage_bucket": "habitsmasher-a16ca.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:222316442214:android:d84c417756a0f1662bb3a7",
+        "android_client_info": {
+          "package_name": "com.example.habitsmasher"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMOpdHhntzbjJhpGZLYI5kG9Uyxqdtv1I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
