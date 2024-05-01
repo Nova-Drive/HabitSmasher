@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:location/location.dart';
 
 extension StringExtension on String {
   String capitalize() {
@@ -15,3 +16,12 @@ extension DateTimeExtension on DateTime {
 enum Operation { add, edit }
 
 BorderRadius textFieldBorderRadius = BorderRadius.circular(20);
+
+extension LocationExtension on LocationData {
+  Map<String, dynamic> toJson() {
+    return {
+      'latitude': latitude,
+      'longitude': longitude,
+    };
+  }
+}

@@ -1,6 +1,7 @@
 import 'package:habitsmasher/models/habit.dart';
 import 'package:location/location.dart';
 import 'package:uuid/uuid.dart';
+import 'package:habitsmasher/extensions.dart';
 
 class HabitEvent {
   String id;
@@ -16,5 +17,30 @@ class HabitEvent {
     required this.habit,
     this.location,
     this.imagePath,
+    String? id,
   }) : id = const Uuid().v4();
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'comment': comment,
+      'date': date,
+      'habitId': habit.id,
+      'location': location?.toJson(),
+      //'imagePath': imagePath,
+    };
+  }
+
+  factory HabitEvent.fromMap(Map<String, dynamic> map, Habit habit) {
+    return HabitEvent(
+      id: map['id'],
+      comment: map['comment'],
+      date: DateTime.parse(map['date']),
+      habit: habit,
+      location: map['location'] != null
+          ? LocationData.fromMap(map['location'])
+          : null,
+      //imagePath: map['imagePath'],
+    );
+  }
 }

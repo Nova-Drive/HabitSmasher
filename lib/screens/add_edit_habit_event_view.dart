@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:habitsmasher/buttons/date_picker.dart';
 import 'package:habitsmasher/extensions.dart';
 import 'package:habitsmasher/models/habit.dart';
 import 'package:habitsmasher/models/habit_event.dart';
+import 'package:location/location.dart';
 
 class AddEditHabitEventView extends StatefulWidget {
   final Function? addHabitEvent;
@@ -26,7 +28,7 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
   TextEditingController commentController = TextEditingController();
   TextEditingController dateController = TextEditingController();
   DateTime date = DateTime.now();
-  String location = '';
+  bool? addLocation = false;
 
   @override
   void initState() {
@@ -43,6 +45,41 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
       throw Exception(
           'Invalid function call. Must provide either add or edit function.');
     }
+  }
+
+  Future<LocationData> locationService() async {
+    Location location = Location();
+    await location.requestPermission();
+    await location.requestService();
+    LocationData place = await location.getLocation();
+    return place;
+  }
+
+  void _addHabitEvent() {
+    HabitEvent event = HabitEvent(
+        comment: commentController.text, date: date, habit: widget.habit);
+
+    if (addLocation!) {
+      locationService().then((LocationData place) {
+        event.location = place;
+      });
+    }
+
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    db
+        .collection("habits")
+        .where("id", isEqualTo: widget.habit.id)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      db
+          .collection("habits")
+          .doc(querySnapshot.docs[0].id)
+          .collection("events")
+          .add(event.toMap());
+    });
+
+    widget.addHabitEvent!(event);
+    Navigator.pop(context);
   }
 
   @override
@@ -74,6 +111,26 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
                       this.date = date;
                     });
                   }),
+              Row(children: [
+                const Text('Add current location?'),
+                Checkbox(
+                    value: addLocation,
+                    onChanged: (bool? value) => setState(() {
+                          addLocation = value!;
+                        }))
+              ]),
+              Row(children: [
+                const Text("Add picture?"),
+                const Padding(padding: EdgeInsets.symmetric(horizontal: 15)),
+                ElevatedButton(
+                    onPressed: () {
+                      // add picture
+                    },
+                    child: const Text('Add Picture'))
+              ]),
+              const Padding(padding: EdgeInsets.all(15)),
+              ElevatedButton(
+                  onPressed: _addHabitEvent, child: const Text('Add Event')),
             ],
           ),
         ),

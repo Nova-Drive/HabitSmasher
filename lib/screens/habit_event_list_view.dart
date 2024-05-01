@@ -22,7 +22,7 @@ class HabitEventList extends StatefulWidget {
 
 class _HabitEventListState extends State<HabitEventList> {
   bool reverse = false;
-  void sortEvents() {
+  void _sortEvents() {
     setState(() {
       if (reverse) {
         widget.habitEvents.sort((a, b) => b.date.compareTo(a.date));
@@ -88,7 +88,7 @@ class _HabitEventListState extends State<HabitEventList> {
                   padding: const EdgeInsets.only(right: 5.0),
                   child: IconButton(
                       onPressed: () {
-                        sortEvents();
+                        _sortEvents();
                         reverse = !reverse;
                       },
                       icon: Icon(

@@ -40,9 +40,27 @@ class _DatePickerState extends State<DatePicker> {
                   })),
         ),
         const SizedBox(width: 30),
-        IconButton.filled(
-            onPressed: () => {},
-            icon: const Icon(Icons.calendar_today_outlined)),
+        Ink(
+          decoration: const ShapeDecoration(
+            color: Colors.amber,
+            shape: CircleBorder(),
+          ),
+          child: IconButton(
+              onPressed: () => showDatePicker(
+                    context: context,
+                    initialDate: startDate,
+                    firstDate:
+                        DateTime.now().subtract(const Duration(days: 365)),
+                    lastDate: DateTime.now(),
+                  ).then((value) {
+                    if (value != null) {
+                      widget.setDate(value);
+                    }
+                  }),
+              icon: const Icon(
+                Icons.calendar_today_outlined,
+              )),
+        ),
         const SizedBox(width: 30),
       ],
     );
