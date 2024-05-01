@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:habitsmasher/buttons/date_picker.dart';
 import 'package:habitsmasher/extensions.dart';
 import 'package:habitsmasher/models/habit.dart';
 import 'package:habitsmasher/models/habit_event.dart';
@@ -54,13 +55,25 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(15.0),
           child: Column(
             children: [
               TextField(
+                minLines: 3,
+                maxLines: null,
                 controller: commentController,
-                decoration: const InputDecoration(labelText: 'Comment'),
+                decoration: InputDecoration(
+                    labelText: 'Comment',
+                    border: OutlineInputBorder(
+                        borderRadius: textFieldBorderRadius)),
               ),
+              DatePicker(
+                  startDateController: dateController,
+                  setDate: (date) {
+                    setState(() {
+                      this.date = date;
+                    });
+                  }),
             ],
           ),
         ),

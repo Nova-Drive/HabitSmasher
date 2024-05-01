@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 extension StringExtension on String {
   String capitalize() {
     return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
@@ -11,3 +13,5 @@ extension DateTimeExtension on DateTime {
 }
 
 enum Operation { add, edit }
+
+BorderRadius textFieldBorderRadius = BorderRadius.circular(20);

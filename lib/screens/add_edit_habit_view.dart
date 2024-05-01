@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:habitsmasher/buttons/date_picker.dart';
 import 'package:habitsmasher/buttons/weekday_button.dart';
 import 'package:habitsmasher/models/habit.dart';
 import 'package:habitsmasher/extensions.dart';
@@ -136,39 +137,13 @@ class _AddEditHabitViewState extends State<AddEditHabitView> {
 
                 const _Spacer(),
 
-                Row(
-                  children: [
-                    Flexible(
-                      child: TextField(
-                          readOnly: true,
-                          controller: startDateController,
-                          // startDate.toString().substring(0, 10)
-                          decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText: "Start Date",
-                            hintText: startDate.toString().substring(0, 10),
-                          ),
-                          onTap: () => showDatePicker(
-                                context: context,
-                                initialDate: startDate,
-                                firstDate: DateTime.now()
-                                    .subtract(const Duration(days: 365)),
-                                lastDate: DateTime.now(),
-                              ).then((value) {
-                                if (value != null) {
-                                  setState(() {
-                                    startDate = value;
-                                  });
-                                }
-                              })),
-                    ),
-                    const SizedBox(width: 30),
-                    IconButton.filled(
-                        onPressed: () => {},
-                        icon: const Icon(Icons.calendar_today_outlined)),
-                    const SizedBox(width: 30),
-                  ],
-                ),
+                DatePicker(
+                    startDateController: startDateController,
+                    setDate: (date) {
+                      setState(() {
+                        startDate = date;
+                      });
+                    }),
                 const _Spacer(),
 
                 widget.operation == Operation.edit
