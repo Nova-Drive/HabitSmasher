@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:habitsmasher/models/habit.dart';
@@ -34,6 +35,53 @@ class _HabitEventListState extends State<HabitEventList> {
     // for (var event in widget.habitEvents) {
     //   debugPrint(event.date.toString());
     // }
+  }
+
+  void _deleteEvent(int index) {
+    HabitEvent event = widget.habitEvents[index];
+    FirebaseFirestore db = FirebaseFirestore.instance;
+
+    db
+        .collection("habits")
+        .where("id", isEqualTo: widget.habit.id)
+        .get()
+        .then((querySnapshot) {
+      String habitId = querySnapshot.docs[0].id;
+      db
+          .collection("habits")
+          .doc(habitId)
+          .collection("events")
+          .where("id", isEqualTo: event.id)
+          .get()
+          .then((querySnapshotTwo) {
+        String eventId = querySnapshotTwo.docs[0].id;
+
+        db
+            .collection("habits")
+            .doc(habitId)
+            .collection("events")
+            .doc(eventId)
+            .delete();
+        setState(() {
+          widget.habitEvents.remove(event);
+        });
+      });
+    });
+  }
+
+  void _editEvent(int index) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => AddEditHabitEventView(
+                  habit: widget.habit,
+                  habitEvent: widget.habitEvents[index],
+                  editHabitEvent: (HabitEvent event) {
+                    setState(() {
+                      widget.habitEvents[index] = event;
+                    });
+                  },
+                )));
   }
 
   @override
@@ -123,16 +171,19 @@ class _HabitEventListState extends State<HabitEventList> {
                     actionPane: const SlidableDrawerActionPane(),
                     secondaryActions: <Widget>[
                       IconSlideAction(
-                        caption: "Edit",
-                        color: Colors.blue,
-                        icon: Icons.edit,
-                        onTap: () {},
-                      ),
+                          caption: "Edit",
+                          color: Colors.blue,
+                          icon: Icons.edit,
+                          onTap: () {
+                            _editEvent(index);
+                          }),
                       IconSlideAction(
                         caption: 'Delete',
                         color: Colors.red,
                         icon: Icons.delete,
-                        onTap: () {},
+                        onTap: () {
+                          _deleteEvent(index);
+                        },
                       )
                     ],
                     child: HabitEventCard(event: widget.habitEvents[index]),

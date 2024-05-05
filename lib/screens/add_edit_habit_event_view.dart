@@ -62,7 +62,8 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
     return place;
   }
 
-  void _addHabitEvent() {
+  void _onSubmit() {
+    // TODO: validate the form fields
     HabitEvent event = HabitEvent(
         comment: commentController.text, date: date, habit: widget.habit);
 
@@ -75,11 +76,20 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
 
     //picture stuff goes here
 
-    _addEventToDb(event);
-    Navigator.pop(context);
+    if (operation == Operation.edit) {
+      _editHabitEvent(widget.habitEvent!, event);
+      Navigator.pop(context);
+      return;
+    } else if (operation == Operation.add) {
+      _addHabitEvent(event);
+      Navigator.pop(context);
+      return;
+    } else {
+      throw Exception('Invalid operation when submitting form.');
+    }
   }
 
-  void _addEventToDb(HabitEvent event) {
+  void _addHabitEvent(HabitEvent event) {
     FirebaseFirestore db = FirebaseFirestore.instance;
     db
         .collection("habits")
@@ -93,6 +103,29 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
           .add(event.toMap());
     });
     widget.addHabitEvent!(event);
+  }
+
+  void _editHabitEvent(HabitEvent oldEvent, HabitEvent newEvent) {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    db
+        .collection("habits")
+        .where("id", isEqualTo: widget.habit.id)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      db
+          .collection("habits")
+          .doc(querySnapshot.docs[0].id)
+          .collection("events")
+          .where("id", isEqualTo: oldEvent.id)
+          .get()
+          .then((QuerySnapshot querySnapshot) {
+        db
+            .collection("habits")
+            .doc(querySnapshot.docs[0].id)
+            .update(newEvent.toMap());
+      });
+    });
+    widget.editHabitEvent!(oldEvent);
   }
 
   @override
@@ -144,7 +177,7 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
               ]),
               const Padding(padding: EdgeInsets.all(15)),
               ElevatedButton(
-                  onPressed: _addHabitEvent, child: const Text('Add Event')),
+                  onPressed: _onSubmit, child: const Text('Add Event')),
             ],
           ),
         ),

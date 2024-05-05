@@ -9,6 +9,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 /// Bug List:
+/// - List needs a futurebuilder or something when opening app after closing it
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

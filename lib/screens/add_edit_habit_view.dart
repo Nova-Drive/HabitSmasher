@@ -175,7 +175,11 @@ class _AddEditHabitViewState extends State<AddEditHabitView> {
       //show no days selected error
       throw NoDaysException('At least one day must be selected');
     }
-    // TODO: validate start date to not be in the future
+    if (startDate.isAfter(DateTime.now())) {
+      // This should never fire because the date picker should not allow future dates
+      // But just in case it's in here
+      throw Exception('Start date cannot be in the future');
+    }
   }
 
   void _showException(Exception e) {
