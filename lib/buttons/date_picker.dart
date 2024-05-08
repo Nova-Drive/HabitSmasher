@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:habitsmasher/extensions.dart';
 
 class DatePicker extends StatefulWidget {
   const DatePicker(
@@ -23,7 +24,9 @@ class _DatePickerState extends State<DatePicker> {
               controller: widget.startDateController,
               // startDate.toString().substring(0, 10)
               decoration: InputDecoration(
-                border: const OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: textFieldBorderRadius,
+                ),
                 labelText: "Start Date",
                 hintText: startDate.toString().substring(0, 10),
               ),

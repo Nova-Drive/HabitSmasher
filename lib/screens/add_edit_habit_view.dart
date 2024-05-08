@@ -182,29 +182,11 @@ class _AddEditHabitViewState extends State<AddEditHabitView> {
     }
   }
 
-  void _showException(Exception e) {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Error'),
-            content: Text(e.toString()),
-            actions: [
-              TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text('OK'))
-            ],
-          );
-        });
-  }
-
   void _makeHabit() {
     try {
       _validate();
     } on Exception catch (e) {
-      _showException(e);
+      showException(context, e);
       return;
     }
     final Habit habit = Habit(
@@ -221,7 +203,7 @@ class _AddEditHabitViewState extends State<AddEditHabitView> {
     try {
       _validate();
     } on Exception catch (e) {
-      _showException(e);
+      showException(context, e);
       return;
     }
     final Habit habit = Habit(

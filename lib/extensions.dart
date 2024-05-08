@@ -25,3 +25,21 @@ extension LocationExtension on LocationData {
     };
   }
 }
+
+void showException(BuildContext context, Exception e) {
+  showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: Text(e.toString()),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('OK'))
+          ],
+        );
+      });
+}

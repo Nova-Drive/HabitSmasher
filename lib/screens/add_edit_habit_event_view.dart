@@ -37,9 +37,14 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
     if (widget.habitEvent != null && widget.editHabitEvent != null) {
       operation = Operation.edit;
       // set the values of the form fields to the values of the habit event
+      commentController.text = widget.habitEvent!.comment;
+      date = widget.habitEvent!.date;
+      dateController.text = date.toString().substring(0, 10);
+      if (widget.habitEvent!.location != null) {
+        addLocation = true;
+      }
     } else if (widget.addHabitEvent != null) {
       operation = Operation.add;
-      // set the values of the form fields to the default values
     } else {
       // throw an error
       throw Exception(
@@ -62,8 +67,22 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
     return place;
   }
 
+  void _validate() {
+    if (commentController.text.isEmpty) {
+      throw NoCommentException('Comment cannot be empty.');
+    } else if (date.isAfter(DateTime.now())) {
+      throw FutureDateException('Date cannot be in the future.');
+    }
+  }
+
   void _onSubmit() {
-    // TODO: validate the form fields
+    try {
+      _validate();
+    } on Exception catch (e) {
+      showException(context, e);
+      return;
+    }
+
     HabitEvent event = HabitEvent(
         comment: commentController.text, date: date, habit: widget.habit);
 
@@ -150,6 +169,7 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
                     border: OutlineInputBorder(
                         borderRadius: textFieldBorderRadius)),
               ),
+              const Padding(padding: EdgeInsets.all(7)),
               DatePicker(
                   startDateController: dateController,
                   setDate: (date) {
@@ -184,4 +204,26 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
       ),
     );
   }
+}
+
+class NoCommentException implements Exception {
+  final String message;
+
+  @override
+  String toString() {
+    return message;
+  }
+
+  NoCommentException(this.message);
+}
+
+class FutureDateException implements Exception {
+  final String message;
+
+  @override
+  String toString() {
+    return message;
+  }
+
+  FutureDateException(this.message);
 }
