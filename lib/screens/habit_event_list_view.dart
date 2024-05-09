@@ -151,44 +151,50 @@ class _HabitEventListState extends State<HabitEventList> {
           height: 3,
           color: Color.fromARGB(255, 100, 100, 100),
         ),
-        ListView.builder(
-            physics:
-                const NeverScrollableScrollPhysics(), // never want this scrollable
-            shrinkWrap: true,
-            // Need to make sure there's at least one event
-            itemCount: widget.habitEvents.length,
-            itemBuilder: ((context, index) {
-              return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => HabitEventDetailView(
-                                  event: widget.habitEvents[index],
-                                )));
-                  },
-                  child: Slidable(
-                    actionPane: const SlidableDrawerActionPane(),
-                    secondaryActions: <Widget>[
-                      IconSlideAction(
-                          caption: "Edit",
-                          color: Colors.blue,
-                          icon: Icons.edit,
+        if (widget.habitEvents.isEmpty)
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text('No events yet'),
+          )
+        else
+          (ListView.builder(
+              physics:
+                  const NeverScrollableScrollPhysics(), // never want this scrollable
+              shrinkWrap: true,
+              // Need to make sure there's at least one event
+              itemCount: widget.habitEvents.length,
+              itemBuilder: ((context, index) {
+                return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HabitEventDetailView(
+                                    event: widget.habitEvents[index],
+                                  )));
+                    },
+                    child: Slidable(
+                      actionPane: const SlidableDrawerActionPane(),
+                      secondaryActions: <Widget>[
+                        IconSlideAction(
+                            caption: "Edit",
+                            color: Colors.blue,
+                            icon: Icons.edit,
+                            onTap: () {
+                              _editEvent(index);
+                            }),
+                        IconSlideAction(
+                          caption: 'Delete',
+                          color: Colors.red,
+                          icon: Icons.delete,
                           onTap: () {
-                            _editEvent(index);
-                          }),
-                      IconSlideAction(
-                        caption: 'Delete',
-                        color: Colors.red,
-                        icon: Icons.delete,
-                        onTap: () {
-                          _deleteEvent(index);
-                        },
-                      )
-                    ],
-                    child: HabitEventCard(event: widget.habitEvents[index]),
-                  ));
-            })),
+                            _deleteEvent(index);
+                          },
+                        )
+                      ],
+                      child: HabitEventCard(event: widget.habitEvents[index]),
+                    ));
+              }))),
       ],
     );
   }
