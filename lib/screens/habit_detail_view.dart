@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:habitsmasher/buttons/weekday_button.dart';
 import 'package:habitsmasher/extensions.dart';
-import 'package:habitsmasher/habit_gauge.dart';
+import 'package:habitsmasher/habit_strength_gauge.dart';
 import 'package:habitsmasher/models/habit.dart';
 import 'package:habitsmasher/models/habit_event.dart';
 import 'package:habitsmasher/network/network.dart';
@@ -31,43 +31,43 @@ class _HabitDetailViewState extends State<HabitDetailView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.habit.name),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                const HabitStrengthGauge(),
-
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        appBar: AppBar(
+          title: Text(widget.habit.name),
+        ),
+        body: FutureBuilder(
+          future: getHabitEvents(widget.habit),
+          builder: ((context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              List<HabitEvent> habitEvents = snapshot.data as List<HabitEvent>;
+              Function equals = const ListEquality().equals;
+              if (equals(habitEvents, widget.habitEvents)) {
+                debugPrint('Same events');
+                return _DetailView(widget: widget);
+              } else if (habitEvents.isEmpty) {
+                return const Text('No events logged yet');
+              }
+              widget.habitEvents = habitEvents;
+              return _DetailView(widget: widget);
+            } else {
+              return const Center(
+                // this is dumb but idk how else to make it look nice
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(widget.habit.description),
-                    const Padding(padding: EdgeInsets.all(5)),
-                    WeekdayButtons(
-                        checked: widget.habit.daysToBool(),
-                        selectable: false,
-                        onChecked: ((bool isChecked, Days day) {})),
+                    CircularProgressIndicator(
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(Colors.amberAccent)),
                   ],
                 ),
-                Text('Start Date: ${widget.habit.startDate.format()}'),
-
-                EventList(widget: widget), //all the habit events
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+              );
+            }
+          }),
+        ));
   }
 }
 
-class EventList extends StatelessWidget {
-  const EventList({
+class _DetailView extends StatelessWidget {
+  const _DetailView({
     super.key,
     required this.widget,
   });
@@ -76,35 +76,36 @@ class EventList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: getHabitEvents(widget.habit),
-        builder: ((context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            List<HabitEvent> habitEvents = snapshot.data as List<HabitEvent>;
-            Function equals = const ListEquality().equals;
-            if (equals(habitEvents, widget.habitEvents)) {
-              debugPrint('Same events');
-              return HabitEventList(
-                  habit: widget.habit, habitEvents: widget.habitEvents);
-            } else if (habitEvents.isEmpty) {
-              return const Text('No events logged yet');
-            }
-            widget.habitEvents = habitEvents;
-            return HabitEventList(
-                habit: widget.habit, habitEvents: widget.habitEvents);
-          } else {
-            return const Center(
-              // this is dumb but idk how else to make it look nice
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+    return SafeArea(
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              HabitStrengthGauge(
+                  habit: widget.habit, habitEvents: widget.habitEvents),
+
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  CircularProgressIndicator(
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(Colors.amberAccent)),
+                  Text(widget.habit.description),
+                  const Padding(padding: EdgeInsets.all(5)),
+                  WeekdayButtons(
+                      checked: widget.habit.daysToBool(),
+                      selectable: false,
+                      onChecked: ((bool isChecked, Days day) {})),
                 ],
               ),
-            );
-          }
-        }));
+              Text('Start Date: ${widget.habit.startDate.format()}'),
+
+              HabitEventList(
+                  habitEvents: widget.habitEvents,
+                  habit: widget.habit), //all the habit events
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

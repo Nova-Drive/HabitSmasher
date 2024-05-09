@@ -1,13 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:habitsmasher/models/habit.dart';
+import 'package:habitsmasher/models/habit_event.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class HabitStrengthGauge extends StatelessWidget {
+  final Habit habit;
+  final List<HabitEvent> habitEvents;
+
   const HabitStrengthGauge({
     super.key,
+    required this.habit,
+    required this.habitEvents,
   });
 
   @override
   Widget build(BuildContext context) {
+    double habitStrength = habitEvents.isEmpty
+        ? 0
+        : (habit.numPossibleEvents() / habitEvents.length * 100);
+
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.75,
       height: MediaQuery.of(context).size.height * 0.35,
@@ -21,9 +32,9 @@ class HabitStrengthGauge extends StatelessWidget {
                         radius: MediaQuery.of(context).size.width *
                             0.24, //maybe change this later
                         backgroundColor: Colors.amberAccent,
-                        child: const Text(
-                          "Habit Strength\n50%",
-                          style: TextStyle(
+                        child: Text(
+                          "Habit Strength\n${habitStrength.toStringAsFixed(0)}%",
+                          style: const TextStyle(
                             fontSize: 20,
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
@@ -31,8 +42,6 @@ class HabitStrengthGauge extends StatelessWidget {
                           textAlign: TextAlign.center,
                         ))),
               ],
-              minimum: 0,
-              maximum: 100,
               showLabels: false,
               showTicks: false,
               startAngle: 270,
@@ -42,9 +51,9 @@ class HabitStrengthGauge extends StatelessWidget {
                 color: Colors.amber,
                 thicknessUnit: GaugeSizeUnit.factor,
               ),
-              pointers: const <GaugePointer>[
+              pointers: <GaugePointer>[
                 RangePointer(
-                  value: 50,
+                  value: habitStrength,
                   width: 0.15,
                   color: Colors.white,
                   pointerOffset: 0.1,
