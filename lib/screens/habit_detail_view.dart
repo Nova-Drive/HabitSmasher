@@ -28,6 +28,12 @@ class _HabitDetailViewState extends State<HabitDetailView> {
     super.initState();
   }
 
+  void editHabitEvent() {
+    setState(() {
+      widget.habitEvents = [];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,12 +48,16 @@ class _HabitDetailViewState extends State<HabitDetailView> {
               Function equals = const ListEquality().equals;
               if (equals(habitEvents, widget.habitEvents)) {
                 debugPrint('Same events');
-                return _DetailView(widget: widget);
+                return _DetailView(
+                    widget: widget,
+                    setState: () {
+                      setState(() {});
+                    });
               } else if (habitEvents.isEmpty) {
                 return const Text('No events logged yet');
               }
               widget.habitEvents = habitEvents;
-              return _DetailView(widget: widget);
+              return _DetailView(widget: widget, setState: editHabitEvent);
             } else {
               return const Center(
                 // this is dumb but idk how else to make it look nice
@@ -67,12 +77,10 @@ class _HabitDetailViewState extends State<HabitDetailView> {
 }
 
 class _DetailView extends StatelessWidget {
-  const _DetailView({
-    super.key,
-    required this.widget,
-  });
+  const _DetailView({super.key, required this.widget, required this.setState});
 
   final HabitDetailView widget;
+  final Function setState;
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +109,9 @@ class _DetailView extends StatelessWidget {
 
               HabitEventList(
                   habitEvents: widget.habitEvents,
-                  habit: widget.habit), //all the habit events
+                  habit: widget.habit,
+                  editEvent: setState),
+              //all the habit events
             ],
           ),
         ),

@@ -15,9 +15,7 @@ class HabitStrengthGauge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double habitStrength = habitEvents.isEmpty
-        ? 0
-        : (habit.numPossibleEvents() / habitEvents.length * 100);
+    double habitStrength = habitEvents.length / habit.numPossibleEvents() * 100;
 
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.75,

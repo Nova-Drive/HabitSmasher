@@ -12,10 +12,12 @@ class HabitEventList extends StatefulWidget {
     super.key,
     required this.habitEvents,
     required this.habit,
+    required this.editEvent,
   });
 
   final List<HabitEvent> habitEvents;
   final Habit habit;
+  final Function editEvent;
 
   @override
   State<HabitEventList> createState() => _HabitEventListState();
@@ -31,41 +33,39 @@ class _HabitEventListState extends State<HabitEventList> {
         widget.habitEvents.sort((a, b) => a.date.compareTo(b.date));
       }
     });
-    // debugPrint('Sorted');
-    // for (var event in widget.habitEvents) {
-    //   debugPrint(event.date.toString());
-    // }
   }
 
-  void _deleteEvent(int index) {
+  void _deleteEvent(int index) async {
     HabitEvent event = widget.habitEvents[index];
     FirebaseFirestore db = FirebaseFirestore.instance;
+    String habitId = "";
+    String eventId = "";
 
-    db
+    await db
         .collection("habits")
         .where("id", isEqualTo: widget.habit.id)
         .get()
-        .then((querySnapshot) {
-      String habitId = querySnapshot.docs[0].id;
-      db
-          .collection("habits")
-          .doc(habitId)
-          .collection("events")
-          .where("id", isEqualTo: event.id)
-          .get()
-          .then((querySnapshotTwo) {
-        String eventId = querySnapshotTwo.docs[0].id;
+        .then((QuerySnapshot querySnapshot) {
+      habitId = querySnapshot.docs[0].id;
+    });
+    await db
+        .collection("habits")
+        .doc(habitId)
+        .collection("events")
+        .where("id", isEqualTo: event.id)
+        .get()
+        .then((QuerySnapshot querySnapshotTwo) {
+      eventId = querySnapshotTwo.docs[0].id;
+    });
 
-        db
-            .collection("habits")
-            .doc(habitId)
-            .collection("events")
-            .doc(eventId)
-            .delete();
-        setState(() {
-          widget.habitEvents.remove(event);
-        });
-      });
+    await db
+        .collection("habits")
+        .doc(habitId)
+        .collection("events")
+        .doc(eventId)
+        .delete();
+    setState(() {
+      widget.habitEvents.remove(event);
     });
   }
 
@@ -77,6 +77,7 @@ class _HabitEventListState extends State<HabitEventList> {
                   habit: widget.habit,
                   habitEvent: widget.habitEvents[index],
                   editHabitEvent: (HabitEvent event) {
+                    widget.editEvent();
                     setState(() {
                       widget.habitEvents[index] = event;
                     });

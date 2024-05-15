@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
 enum Days { monday, tuesday, wednesday, thursday, friday, saturday, sunday }
@@ -60,9 +59,13 @@ class Habit {
 
   int numPossibleEvents() {
     // TODO: make sure this works
-
-    return DateTime.now().difference(startDate).inDays /
-        7 ~/
-        recurranceDays.length;
+    var numDays = DateTime.now().difference(startDate).inDays;
+    var numWeeks = numDays ~/ 7;
+    var numExtraDays = numDays % 7;
+    return numWeeks * recurranceDays.length +
+        recurranceDays
+            .where((day) => day.index <= numExtraDays)
+            .toList()
+            .length;
   }
 }

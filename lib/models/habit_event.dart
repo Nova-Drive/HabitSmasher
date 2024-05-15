@@ -19,7 +19,7 @@ class HabitEvent {
     this.location,
     this.imagePath,
     String? id,
-  }) : id = const Uuid().v4();
+  }) : id = id ?? const Uuid().v4();
 
   Map<String, dynamic> toMap() {
     return {

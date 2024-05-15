@@ -6,6 +6,9 @@ Future<List<HabitEvent>> getHabitEvents(Habit habit) async {
   List<HabitEvent> habitEvents = [];
   FirebaseFirestore db = FirebaseFirestore.instance;
 
+  // wait .2 seconds just in case event is edited and we need to wait for the db to update
+  await Future.delayed(const Duration(milliseconds: 250));
+
   QuerySnapshot querySnapshot =
       await db.collection('habits').where('id', isEqualTo: habit.id).get();
   String habitId = querySnapshot.docs[0].id;

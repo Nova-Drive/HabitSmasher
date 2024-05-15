@@ -124,22 +124,48 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
     widget.addHabitEvent!(event);
   }
 
-  void _editHabitEvent(HabitEvent oldEvent, HabitEvent newEvent) {
+  void _editHabitEvent(HabitEvent oldEvent, HabitEvent newEvent) async {
     FirebaseFirestore db = FirebaseFirestore.instance;
+    String oldHabitId = "";
+    // String eventId = "";
+
+    // await db
+    //     .collection("habits")
+    //     .where("id", isEqualTo: widget.habit.id)
+    //     .get()
+    //     .then((QuerySnapshot querySnapshot) {
+    //   oldHabitId = querySnapshot.docs[0].id;
+    // });
+    // await db
+    //     .collection("habits")
+    //     .doc(oldHabitId)
+    //     .collection("events")
+    //     .where("id", isEqualTo: oldEvent.id)
+    //     .get()
+    //     .then((QuerySnapshot querySnapshotTwo) {
+    //   eventId = querySnapshotTwo.docs[0].id;
+    // });
+    // await db
+    //         .collection("habits")
+    //         .doc(querySnapshot.docs[0].id)
+    //         .update(newEvent.toMap());
     db
         .collection("habits")
         .where("id", isEqualTo: widget.habit.id)
         .get()
         .then((QuerySnapshot querySnapshot) {
+      oldHabitId = querySnapshot.docs[0].id;
       db
           .collection("habits")
-          .doc(querySnapshot.docs[0].id)
+          .doc(oldHabitId)
           .collection("events")
           .where("id", isEqualTo: oldEvent.id)
           .get()
           .then((QuerySnapshot querySnapshot) {
         db
             .collection("habits")
+            .doc(oldHabitId)
+            .collection("events")
             .doc(querySnapshot.docs[0].id)
             .update(newEvent.toMap());
       });
