@@ -15,28 +15,38 @@ class HabitEventDetailView extends StatelessWidget {
         appBar: AppBar(
           title: const Text("Habit Event"),
         ),
-        body: Center(
-            child: Column(
-          children: [
-            Row(
-              children: [
-                //picture here
-                Image.asset(
-                  "images/habit_temp_img.png",
-                  width: MediaQuery.of(context).size.width * 0.50,
-                ),
-                Text(event.date.format()),
-              ],
-            ),
-            Container(
-                width: MediaQuery.of(context).size.width * 0.99,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black),
-                ),
-                child: Text(event.comment)),
-            if (event.location != null) MapBox(event: event),
-          ],
-        )));
+        body: SingleChildScrollView(
+          child: Center(
+              child: Column(
+            children: [
+              Row(
+                children: [
+                  //picture here
+                  Image.asset(
+                    "images/habit_temp_img.png",
+                    width: MediaQuery.of(context).size.width * 0.50,
+                  ),
+                  Text(event.date.format()),
+                ],
+              ),
+              Container(
+                  padding: const EdgeInsets.all(5),
+                  width: MediaQuery.of(context).size.width * 0.99,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black),
+                  ),
+                  child: Text(event.comment)),
+              const Padding(padding: EdgeInsets.all(10)),
+              if (event.location != null)
+                Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black, width: 2),
+                    ),
+                    child: MapBox(event: event)),
+            ],
+          )),
+        ));
   }
 }
 
@@ -56,10 +66,11 @@ class MapBox extends StatelessWidget {
         child: FlutterMap(
             // Maybe change this to a "paid" service later
             options: MapOptions(
-              initialCenter:
-                  LatLng(event.location!.latitude!, event.location!.longitude!),
-              initialZoom: 15.0,
-            ),
+                initialCenter: LatLng(
+                    event.location!.latitude!, event.location!.longitude!),
+                initialZoom: 15.0,
+                interactionOptions:
+                    const InteractionOptions(flags: InteractiveFlag.pinchZoom)),
             children: [
               TileLayer(
                 urlTemplate:

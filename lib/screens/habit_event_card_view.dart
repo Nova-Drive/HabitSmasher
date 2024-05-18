@@ -9,11 +9,14 @@ class HabitEventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var commentString = event.comment.length > 25
+        ? "${event.comment.substring(0, 25)}..."
+        : event.comment;
+
     return Card(
       child: ListTile(
-        // still needs picture eventually
         leading: Text(event.date.format()),
-        title: Text(event.comment), //maybe only do substring plus "..." here
+        title: Text(commentString),
       ),
     );
   }

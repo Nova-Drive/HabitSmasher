@@ -61,9 +61,11 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
 
   Future<LocationData> locationService() async {
     Location location = Location();
-    await location.requestPermission();
-    await location.requestService();
-    LocationData place = await location.getLocation();
+    await Future.wait(
+        [location.requestPermission(), location.requestService()]);
+    // await location.requestService();
+    LocationData place =
+        await Future.wait([location.getLocation()]).then((value) => value[0]);
     return place;
   }
 
@@ -88,9 +90,11 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
 
     if (addLocation!) {
       debugPrint('Adding location');
-      locationService().then((LocationData place) {
-        event.location = place;
-      });
+
+      locationService().then((place) => event.location = place);
+      // locationService().then((LocationData place) {
+      //   event.location = place;
+      // });
     }
 
     //picture stuff goes here
@@ -181,50 +185,53 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
             ? 'Add Habit Event'
             : 'Edit Habit Event'),
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Column(
-            children: [
-              TextField(
-                minLines: 3,
-                maxLines: null,
-                controller: commentController,
-                decoration: InputDecoration(
-                    labelText: 'Comment',
-                    border: OutlineInputBorder(
-                        borderRadius: textFieldBorderRadius)),
-              ),
-              const Padding(padding: EdgeInsets.all(7)),
-              DatePicker(
-                  startDateController: dateController,
-                  setDate: (date) {
-                    setState(() {
-                      this.date = date;
-                      dateController.text = date.toString().substring(0, 10);
-                    });
-                  }),
-              Row(children: [
-                const Text('Add current location?'),
-                Checkbox(
-                    value: addLocation,
-                    onChanged: (bool? value) => setState(() {
-                          addLocation = value!;
-                        }))
-              ]),
-              Row(children: [
-                const Text("Add picture?"),
-                const Padding(padding: EdgeInsets.symmetric(horizontal: 15)),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Column(
+              children: [
+                TextField(
+                  minLines: 3,
+                  maxLines: null,
+                  controller: commentController,
+                  decoration: InputDecoration(
+                      labelText: 'Comment',
+                      border: OutlineInputBorder(
+                          borderRadius: textFieldBorderRadius)),
+                ),
+                const Padding(padding: EdgeInsets.all(7)),
+                DatePicker(
+                    startDateController: dateController,
+                    setDate: (date) {
+                      setState(() {
+                        this.date = date;
+                        dateController.text = date.toString().substring(0, 10);
+                      });
+                    }),
+                Row(children: [
+                  const Text('Add current location?'),
+                  Checkbox(
+                      value: addLocation,
+                      onChanged: (bool? value) => setState(() {
+                            addLocation = value!;
+                          }))
+                ]),
+                Row(children: [
+                  const Text("Add picture?"),
+                  const Padding(padding: EdgeInsets.symmetric(horizontal: 15)),
+                  ElevatedButton(
+                      onPressed: () {
+                        // add picture
+                      },
+                      child: const Text('Add Picture'))
+                ]),
+                const Padding(padding: EdgeInsets.all(15)),
                 ElevatedButton(
-                    onPressed: () {
-                      // add picture
-                    },
-                    child: const Text('Add Picture'))
-              ]),
-              const Padding(padding: EdgeInsets.all(15)),
-              ElevatedButton(
-                  onPressed: _onSubmit, child: const Text('Add Event')),
-            ],
+                    onPressed: _onSubmit, child: const Text('Add Event')),
+                const Padding(padding: EdgeInsets.only(bottom: 20))
+              ],
+            ),
           ),
         ),
       ),
