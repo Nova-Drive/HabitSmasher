@@ -30,11 +30,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  uuid: ^3.0.4
-  flutter_slidable: ^0.6.0
-  image_picker: ^0.8.4+4
-  location: ^4.3.0
-  flutter_map: ^6.1.0
+  uuid: ^4.4.0
+  flutter_slidable: ^3.1.0
+  image_picker: ^1.1.1
+  location: ^6.0.2
+  flutter_map: ^7.0.0
   latlong2: ^0.9.1
   syncfusion_flutter_gauges: ^25.1.41
 
@@ -45,6 +45,7 @@ dependencies:
   firebase_core: ^2.24.2
   cloud_firestore: ^4.14.0
   collection: ^1.17.2
+  firebase_storage: ^11.6.0
 
 dev_dependencies:
   flutter_test:
@@ -55,7 +56,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.0
+  flutter_lints: ^4.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

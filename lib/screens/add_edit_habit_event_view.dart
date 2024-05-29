@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:habitsmasher/buttons/date_picker.dart';
 import 'package:habitsmasher/extensions.dart';
 import 'package:habitsmasher/models/habit.dart';
 import 'package:habitsmasher/models/habit_event.dart';
+import 'package:habitsmasher/network/network.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart';
 
 class AddEditHabitEventView extends StatefulWidget {
@@ -29,6 +33,8 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
   TextEditingController dateController = TextEditingController();
   DateTime date = DateTime.now();
   bool? addLocation = false;
+  final ImagePicker _picker = ImagePicker();
+  XFile? _image;
 
   @override
   void initState() {
@@ -98,6 +104,9 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
     }
 
     //picture stuff goes here
+    if (_image != null) {
+      event.imagePath = uploadPic(File(_image!.path));
+    }
 
     if (operation == Operation.edit) {
       _editHabitEvent(widget.habitEvent!, event);
@@ -222,7 +231,11 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
                   const Padding(padding: EdgeInsets.symmetric(horizontal: 15)),
                   ElevatedButton(
                       onPressed: () {
-                        // add picture
+                        showModalBottomSheet(
+                            context: context,
+                            builder: (context) {
+                              return modalSheet(context);
+                            });
                       },
                       child: const Text('Add Picture'))
                 ]),
@@ -236,6 +249,51 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
         ),
       ),
     );
+  }
+
+  Widget modalSheet(context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        ListTile(
+          leading: const Icon(Icons.camera_alt),
+          title: const Text('Camera'),
+          onTap: () {
+            Navigator.pop(context);
+            _getImage(ImageSource.camera);
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.photo_library),
+          title: const Text('Gallery'),
+          onTap: () {
+            Navigator.pop(context);
+            _getImage(ImageSource.gallery);
+          },
+        ),
+        const Padding(padding: EdgeInsets.all(15)),
+      ],
+    );
+  }
+
+  // This function is used to get the image from the camera
+  Future _getImage(ImageSource source) async {
+    // Future is used with async
+    // pickImage has two sources for ImageSource: .camera and .gallery
+
+    // need to make an action sheet or popup to choose between camera and gallery
+
+    final XFile? image;
+
+    if (source == ImageSource.camera) {
+      image = await _picker.pickImage(source: ImageSource.camera);
+    } else {
+      image = await _picker.pickImage(source: ImageSource.gallery);
+    }
+
+    setState(() {
+      _image = image; // set the image to the image file
+    });
   }
 }
 

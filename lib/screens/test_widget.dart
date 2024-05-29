@@ -20,29 +20,65 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Example of Image Picker in flutter'),
-      ),
-      body: Center(
-        child: _image == null
-            ? const Text('No image selected.')
-            // the image is a file so we need to give it the file path
-            : Image.file(File(_image!.path)), // get the image file via path
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: getImage,
-        tooltip: 'Pick Image',
-        child: const Icon(Icons.add_a_photo),
-      ),
+    return Stack(alignment: Alignment.center, children: <Widget>[
+      _image == null
+          ? const Text('No image selected.')
+          // the image is a file so we need to give it the file path
+          : Image.file(File(_image!.path)),
+      Align(
+          //alignment: Alignment.bottomRight,
+          child: FloatingActionButton(
+              onPressed: () {
+                showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      return modalSheet(context);
+                    });
+              },
+              tooltip: 'Pick Image',
+              child: const Icon(Icons.add_a_photo)))
+    ]);
+  }
+
+  Widget modalSheet(context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        ListTile(
+          leading: const Icon(Icons.camera_alt),
+          title: const Text('Camera'),
+          onTap: () {
+            Navigator.pop(context);
+            _getImage(ImageSource.camera);
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.photo_library),
+          title: const Text('Gallery'),
+          onTap: () {
+            Navigator.pop(context);
+            _getImage(ImageSource.gallery);
+          },
+        ),
+        const Padding(padding: EdgeInsets.all(15)),
+      ],
     );
   }
 
   // This function is used to get the image from the camera
-  Future getImage() async {
+  Future _getImage(ImageSource source) async {
     // Future is used with async
     // pickImage has two sources for ImageSource: .camera and .gallery
-    final XFile? image = await _picker.pickImage(source: ImageSource.camera);
+
+    // need to make an action sheet or popup to choose between camera and gallery
+
+    final XFile? image;
+
+    if (source == ImageSource.camera) {
+      image = await _picker.pickImage(source: ImageSource.camera);
+    } else {
+      image = await _picker.pickImage(source: ImageSource.gallery);
+    }
 
     setState(() {
       _image = image; // set the image to the image file

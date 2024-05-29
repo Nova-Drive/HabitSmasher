@@ -13,7 +13,7 @@ class HabitEventDetailView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Habit Event"),
+          title: Text(event.date.format()),
         ),
         body: SingleChildScrollView(
           child: Center(
@@ -26,24 +26,21 @@ class HabitEventDetailView extends StatelessWidget {
                     "images/habit_temp_img.png",
                     width: MediaQuery.of(context).size.width * 0.50,
                   ),
-                  Text(event.date.format()),
+                  if (event.location != null)
+                    Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black, width: 2),
+                        ),
+                        child: MapBox(event: event)),
                 ],
               ),
               Container(
-                  padding: const EdgeInsets.all(5),
+                  padding: const EdgeInsets.all(20),
                   width: MediaQuery.of(context).size.width * 0.99,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                  ),
-                  child: Text(event.comment)),
+                  child: Text(event.comment,
+                      style: const TextStyle(fontSize: 18))),
               const Padding(padding: EdgeInsets.all(10)),
-              if (event.location != null)
-                Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black, width: 2),
-                    ),
-                    child: MapBox(event: event)),
             ],
           )),
         ));

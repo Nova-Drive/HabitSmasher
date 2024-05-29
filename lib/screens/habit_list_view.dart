@@ -74,37 +74,43 @@ Widget habitCards(
                             HabitDetailView(habit: habits[index])));
               },
               child: Slidable(
-                actionPane: const SlidableDrawerActionPane(),
-                actionExtentRatio: 0.25,
-                secondaryActions: <Widget>[
-                  IconSlideAction(
-                    caption: 'Edit',
-                    color: Colors.blue,
-                    icon: Icons.edit,
-                    onTap: () {
-                      // Edit the habit
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AddEditHabitView(
-                                    operation: Operation.edit,
-                                    index: index,
-                                    habit: habits[index],
-                                    editHabit: editHabit,
-                                  )));
-                    },
-                  ),
-                  IconSlideAction(
-                    caption: 'Delete',
-                    color: Colors.red,
-                    icon: Icons.delete,
-                    onTap: () {
-                      // Delete the habit
-                      deleteHabit(habits[index]);
-                      habits.removeAt(index);
-                    },
-                  ),
-                ],
+                endActionPane: ActionPane(
+                    motion: const ScrollMotion(),
+                    extentRatio: 0.5,
+                    openThreshold: 0.2,
+                    closeThreshold: 0.8,
+                    children: <Widget>[
+                      SlidableAction(
+                          borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(10),
+                              bottomLeft: Radius.circular(10)),
+                          label: 'Edit',
+                          backgroundColor: Colors.blue,
+                          icon: Icons.edit,
+                          onPressed: (context) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => AddEditHabitView(
+                                          operation: Operation.edit,
+                                          index: index,
+                                          habit: habits[index],
+                                          editHabit: editHabit,
+                                        )));
+                          }),
+                      SlidableAction(
+                        borderRadius: const BorderRadius.only(
+                            topRight: Radius.circular(10),
+                            bottomRight: Radius.circular(10)),
+                        label: 'Delete',
+                        backgroundColor: Colors.red,
+                        icon: Icons.delete,
+                        onPressed: (context) {
+                          deleteHabit(habits[index]);
+                          habits.removeAt(index);
+                        },
+                      )
+                    ]),
                 child: HabitCardView(habit: habits[index]),
               ));
         }),

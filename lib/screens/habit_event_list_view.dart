@@ -175,24 +175,34 @@ class _HabitEventListState extends State<HabitEventList> {
                                   )));
                     },
                     child: Slidable(
-                      actionPane: const SlidableDrawerActionPane(),
-                      secondaryActions: <Widget>[
-                        IconSlideAction(
-                            caption: "Edit",
-                            color: Colors.blue,
-                            icon: Icons.edit,
-                            onTap: () {
-                              _editEvent(index);
-                            }),
-                        IconSlideAction(
-                          caption: 'Delete',
-                          color: Colors.red,
-                          icon: Icons.delete,
-                          onTap: () {
-                            _deleteEvent(index);
-                          },
-                        )
-                      ],
+                      endActionPane: ActionPane(
+                          motion: const ScrollMotion(),
+                          extentRatio: 0.5,
+                          openThreshold: 0.2,
+                          closeThreshold: 0.8,
+                          children: <Widget>[
+                            SlidableAction(
+                                borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(10),
+                                    bottomLeft: Radius.circular(10)),
+                                label: "Edit",
+                                backgroundColor: Colors.blue,
+                                icon: Icons.edit,
+                                onPressed: (context) {
+                                  _editEvent(index);
+                                }),
+                            SlidableAction(
+                              borderRadius: const BorderRadius.only(
+                                  topRight: Radius.circular(10),
+                                  bottomRight: Radius.circular(10)),
+                              label: 'Delete',
+                              backgroundColor: Colors.red,
+                              icon: Icons.delete,
+                              onPressed: (context) {
+                                _deleteEvent(index);
+                              },
+                            )
+                          ]),
                       child: HabitEventCard(event: widget.habitEvents[index]),
                     ));
               }))),
