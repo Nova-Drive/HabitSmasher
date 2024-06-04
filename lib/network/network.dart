@@ -40,7 +40,7 @@ Future<List<Habit>> getHabits() async {
   return habits;
 }
 
-String uploadPic(File image) {
+Future<String> uploadPic(File image) async {
   FirebaseStorage storage = FirebaseStorage.instance;
   //Create a reference to the location you want to upload to in firebase
   Reference reference = storage.ref().child("images/test");
@@ -48,9 +48,13 @@ String uploadPic(File image) {
   //Upload the file to firebase
   UploadTask uploadTask = reference.putFile(image);
 
-  String url = ' ';
-  uploadTask.whenComplete(() async => url = await reference.getDownloadURL());
+  String url = '';
+  // await uploadTask.whenComplete(() async {
+  //   url = await reference.getDownloadURL();
+  //   return url;
+  // });
 
-  //returns the download url
+  uploadTask.whenComplete(
+      () => reference.getDownloadURL().then((result) => url = result));
   return url;
 }

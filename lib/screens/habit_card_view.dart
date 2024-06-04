@@ -9,8 +9,8 @@ class HabitCardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 3,
-      shadowColor: Colors.amber,
+      elevation: 5,
+      shadowColor: Colors.brown,
       child: ListTile(
         title: Text(habit.name),
         subtitle: Text(habit.description),

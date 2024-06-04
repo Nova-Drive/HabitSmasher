@@ -27,14 +27,16 @@ class _HabitListViewState extends State<HabitListView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Colors.green[100],
         appBar: AppBar(
+          backgroundColor: Colors.green[300],
           title: const Text('Habit List'),
           centerTitle: false,
           actions: [
             IconButton(
               padding: const EdgeInsets.only(right: 20),
               icon: const Icon(Icons.add),
-              style: ButtonStyle(iconSize: MaterialStateProperty.all(40)),
+              style: ButtonStyle(iconSize: WidgetStateProperty.all(40)),
               onPressed: () {
                 // Add a new habit
                 Navigator.push(
@@ -47,10 +49,13 @@ class _HabitListViewState extends State<HabitListView> {
             ),
           ],
         ),
-        body: habitCards(
-            habits: widget.habits,
-            editHabit: widget.editHabit,
-            deleteHabit: widget.deleteHabit));
+        body: Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: habitCards(
+              habits: widget.habits,
+              editHabit: widget.editHabit,
+              deleteHabit: widget.deleteHabit),
+        ));
   }
 }
 

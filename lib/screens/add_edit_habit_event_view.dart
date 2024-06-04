@@ -105,7 +105,7 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
 
     //picture stuff goes here
     if (_image != null) {
-      event.imagePath = uploadPic(File(_image!.path));
+      uploadPic(File(_image!.path)).then((url) => event.imagePath = url);
     }
 
     if (operation == Operation.edit) {

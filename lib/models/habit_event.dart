@@ -28,7 +28,7 @@ class HabitEvent {
       'date': date,
       'habitId': habit.id,
       'location': location?.toJson(),
-      //'imagePath': imagePath,
+      'imagePath': imagePath,
     };
   }
 
@@ -41,7 +41,7 @@ class HabitEvent {
       location: map['location'] != null
           ? LocationData.fromMap(map['location'])
           : null,
-      //imagePath: map['imagePath'],
+      imagePath: map['imagePath'],
     );
   }
 }
