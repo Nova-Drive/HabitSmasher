@@ -9,7 +9,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 /// Bug List:
-///
+/// Sort event button works but only after second press
 
 ThemeData theme = ThemeData(
   useMaterial3: true,

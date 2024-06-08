@@ -115,7 +115,7 @@ class _HabitEventListState extends State<HabitEventList> {
                   reverse = !reverse;
                 },
                 icon: Icon(
-                  reverse ? Icons.arrow_downward : Icons.arrow_upward,
+                  reverse ? Icons.arrow_upward : Icons.arrow_downward,
                   color: const Color.fromARGB(255, 177, 144, 24),
                 )),
             const Spacer(),

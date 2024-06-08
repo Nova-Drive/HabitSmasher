@@ -38,7 +38,7 @@ class _TodayViewState extends State<TodayView> {
         appBar: AppBar(
           centerTitle: false,
           title: // maybe add full date here
-              Text("Today: ${Days.values[widget.dayOfWeek].name.capitalize()}",
+              Text(Days.values[widget.dayOfWeek].name.capitalize(),
                   style: theme.appBarTheme.titleTextStyle),
         ),
         body: habitCards(

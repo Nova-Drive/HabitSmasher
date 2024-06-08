@@ -3,6 +3,7 @@ import 'package:habitsmasher/buttons/date_picker.dart';
 import 'package:habitsmasher/buttons/weekday_button.dart';
 import 'package:habitsmasher/models/habit.dart';
 import 'package:habitsmasher/extensions.dart';
+import 'package:habitsmasher/theme.dart';
 
 class AddEditHabitView extends StatefulWidget {
   final Habit? habit;
@@ -148,10 +149,12 @@ class _AddEditHabitViewState extends State<AddEditHabitView> {
 
                 widget.operation == Operation.edit
                     ? ElevatedButton(
+                        style: theme.elevatedButtonTheme.style,
                         onPressed: _editHabit,
                         child: const Text("Edit Habit"),
                       )
                     : ElevatedButton(
+                        style: theme.elevatedButtonTheme.style,
                         onPressed: _makeHabit,
                         child: const Text("Add Habit"),
                       )

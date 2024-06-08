@@ -19,31 +19,47 @@ class HabitEventDetailView extends StatelessWidget {
           child: Center(
               child: Column(
             children: [
-              Row(
-                children: [
-                  //picture here
-                  Image.asset(
-                    "images/habit_temp_img.png",
-                    width: MediaQuery.of(context).size.width * 0.50,
-                  ),
-                  if (event.location != null)
-                    Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black, width: 2),
-                        ),
-                        child: MapBox(event: event)),
-                ],
+              _BorderBox(
+                width: MediaQuery.of(context).size.width * 0.50,
+                child: Image.asset(
+                  "images/habit_temp_img.png",
+                ),
               ),
-              Container(
-                  padding: const EdgeInsets.all(20),
-                  width: MediaQuery.of(context).size.width * 0.99,
-                  child: Text(event.comment,
-                      style: const TextStyle(fontSize: 18))),
+              if (event.location != null)
+                _BorderBox(child: MapBox(event: event)),
+              _BorderBox(
+                width: double.infinity,
+                child:
+                    Text(event.comment, style: const TextStyle(fontSize: 18)),
+              ),
               const Padding(padding: EdgeInsets.all(10)),
             ],
           )),
         ));
+  }
+}
+
+class _BorderBox extends StatelessWidget {
+  final Widget child;
+  final Color backgroundColor = Colors.green[50]!;
+  final double? width;
+
+  _BorderBox({required this.child, this.width});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Container(
+          padding: const EdgeInsets.all(8),
+          width: width ?? MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            border: Border.all(color: Colors.brown, width: 3),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: child),
+    );
   }
 }
 
