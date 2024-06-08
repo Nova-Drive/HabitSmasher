@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:habitsmasher/extensions.dart';
 import 'package:habitsmasher/models/habit.dart';
 import 'package:habitsmasher/screens/habit_list_view.dart';
+import 'package:habitsmasher/theme.dart';
 
 class TodayView extends StatefulWidget {
   final List<Habit> habits;
@@ -37,7 +38,8 @@ class _TodayViewState extends State<TodayView> {
         appBar: AppBar(
           centerTitle: false,
           title: // maybe add full date here
-              Text("Today: ${Days.values[widget.dayOfWeek].name.capitalize()}"),
+              Text("Today: ${Days.values[widget.dayOfWeek].name.capitalize()}",
+                  style: theme.appBarTheme.titleTextStyle),
         ),
         body: habitCards(
             habits: habitsForToday,

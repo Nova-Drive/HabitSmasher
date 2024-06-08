@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:habitsmasher/extensions.dart';
 import 'package:habitsmasher/models/habit_event.dart';
+import 'package:habitsmasher/theme.dart';
 
 class HabitEventCard extends StatelessWidget {
   final HabitEvent event;
@@ -14,6 +15,9 @@ class HabitEventCard extends StatelessWidget {
         : event.comment;
 
     return Card(
+      color: theme.cardTheme.color,
+      shadowColor: theme.cardTheme.shadowColor,
+      elevation: 5,
       child: ListTile(
         leading: Text(event.date.format()),
         title: Text(commentString),

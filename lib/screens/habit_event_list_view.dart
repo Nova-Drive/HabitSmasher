@@ -6,6 +6,7 @@ import 'package:habitsmasher/models/habit_event.dart';
 import 'package:habitsmasher/screens/add_edit_habit_event_view.dart';
 import 'package:habitsmasher/screens/habit_event_card_view.dart';
 import 'package:habitsmasher/screens/habit_event_detail_view.dart';
+import 'package:habitsmasher/theme.dart';
 
 class HabitEventList extends StatefulWidget {
   const HabitEventList({
@@ -97,54 +98,50 @@ class _HabitEventListState extends State<HabitEventList> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ElevatedButton(
-            onPressed: () {
-              // Add a new habit
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AddEditHabitEventView(
-                      habit: widget.habit,
-                      addHabitEvent: (HabitEvent event) {
-                        setState(() {
-                          widget.habitEvents.add(event);
-                        });
-                      },
-                    ),
-                  ));
-            },
-            child: const Text(
-              'Add Event',
-              style: TextStyle(color: Color.fromARGB(255, 177, 144, 24)),
-            )),
         Row(
           children: [
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                  padding: EdgeInsets.only(left: 5.0),
-                  child: Text("Habit Events",
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold,
-                      ))),
-            ),
+            const Padding(
+                padding: EdgeInsets.only(left: 8.0),
+                child: Text("Habit Events",
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                    ))),
 
             // Add a sort button here
-            Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 5.0),
-                  child: IconButton(
-                      onPressed: () {
-                        _sortEvents();
-                        reverse = !reverse;
-                      },
-                      icon: Icon(
-                        reverse ? Icons.arrow_downward : Icons.arrow_upward,
-                        color: const Color.fromARGB(255, 177, 144, 24),
-                      )),
-                ))
+            IconButton(
+                onPressed: () {
+                  _sortEvents();
+                  reverse = !reverse;
+                },
+                icon: Icon(
+                  reverse ? Icons.arrow_downward : Icons.arrow_upward,
+                  color: const Color.fromARGB(255, 177, 144, 24),
+                )),
+            const Spacer(),
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: ElevatedButton(
+                  style: theme.elevatedButtonTheme.style,
+                  onPressed: () {
+                    // Add a new habit
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddEditHabitEventView(
+                            habit: widget.habit,
+                            addHabitEvent: (HabitEvent event) {
+                              setState(() {
+                                widget.habitEvents.add(event);
+                              });
+                            },
+                          ),
+                        ));
+                  },
+                  child: const Text(
+                    'Add Event',
+                  )),
+            ),
           ],
         ),
         const Divider(

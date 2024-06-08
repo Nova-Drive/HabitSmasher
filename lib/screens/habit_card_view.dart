@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habitsmasher/models/habit.dart';
+import 'package:habitsmasher/theme.dart';
 
 class HabitCardView extends StatelessWidget {
   final Habit habit;
@@ -9,8 +10,10 @@ class HabitCardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 5,
-      shadowColor: Colors.brown,
+      color: theme.cardTheme.color,
+      surfaceTintColor: theme.cardTheme.surfaceTintColor,
+      shadowColor: theme.cardTheme.shadowColor,
+      elevation: theme.cardTheme.elevation,
       child: ListTile(
         title: Text(habit.name),
         subtitle: Text(habit.description),

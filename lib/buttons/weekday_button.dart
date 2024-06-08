@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habitsmasher/models/habit.dart';
+import 'package:habitsmasher/theme.dart';
 
 class WeekdayButton extends StatefulWidget {
   const WeekdayButton(
@@ -41,7 +42,7 @@ class _WeekdayButtonState extends State<WeekdayButton> {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: isChecked ? Colors.lightBlue : Colors.white,
+            color: isChecked ? theme.primaryColor : Colors.white,
             border: Border.all(),
             shape: BoxShape.circle,
           ),

@@ -59,14 +59,13 @@ class _HabitDetailViewState extends State<HabitDetailView> {
               widget.habitEvents = habitEvents;
               return _DetailView(widget: widget, setState: editHabitEvent);
             } else {
-              return const Center(
+              return Center(
                 // this is dumb but idk how else to make it look nice
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Colors.amberAccent)),
+                        color: Theme.of(context).primaryColorDark),
                   ],
                 ),
               );

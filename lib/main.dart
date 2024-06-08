@@ -9,7 +9,31 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 /// Bug List:
-/// - List needs a futurebuilder or something when opening app after closing it
+///
+
+ThemeData theme = ThemeData(
+  useMaterial3: true,
+  primarySwatch: Colors.green,
+  primaryColor: Colors.green[300],
+  hintColor: Colors.green[300],
+  scaffoldBackgroundColor: Colors.green[100],
+  appBarTheme: AppBarTheme(
+    backgroundColor: Colors.green[400],
+  ),
+  floatingActionButtonTheme: const FloatingActionButtonThemeData(
+    backgroundColor: Colors.green,
+  ),
+  bottomNavigationBarTheme: BottomNavigationBarThemeData(
+    backgroundColor: Colors.green[100],
+    selectedItemColor: Colors.green[400],
+    unselectedItemColor: Colors.green[300],
+  ),
+  cardTheme: CardTheme(
+    color: Colors.green[200],
+    shadowColor: Colors.green[400],
+    elevation: 10,
+  ),
+);
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,22 +49,37 @@ class HabitSmasherApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(useMaterial3: true),
-      home: const Navigation(),
+      theme: theme,
+      home: FutureBuilder(
+          future: getHabits(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              List<Habit> habits = snapshot.data as List<Habit>;
+              return Navigation(habits: habits);
+            } else {
+              return const Center(
+                  child: CircularProgressIndicator(
+                color: Colors.green,
+                semanticsLabel: 'Loading habits',
+              ));
+            }
+          }),
     );
   }
 }
 
+// kinda hacky but it works
+// could probably fix this by putting the list methods in the main class
+// ignore: must_be_immutable
 class Navigation extends StatefulWidget {
-  const Navigation({super.key});
-
+  Navigation({super.key, required this.habits});
+  List<Habit> habits;
   @override
   State<Navigation> createState() => _NavigationState();
 }
 
 class _NavigationState extends State<Navigation> {
   int currentPageIndex = 0;
-  List<Habit> habits = [];
   FirebaseFirestore db = FirebaseFirestore.instance;
 
   @override
@@ -48,14 +87,14 @@ class _NavigationState extends State<Navigation> {
     super.initState();
     getHabits().then((list) {
       setState(() {
-        habits = list;
+        widget.habits = list;
       });
     });
   }
 
   void addHabit(Habit habit) {
     setState(() {
-      habits.add(habit);
+      widget.habits.add(habit);
     });
     db.collection('habits').add(habit.toMap());
   }
@@ -75,7 +114,7 @@ class _NavigationState extends State<Navigation> {
                 onError: (error) =>
                     debugPrint('error updating habit with id ${oldHabit.id}'));
       });
-      habits[habits.indexOf(oldHabit)] = newHabit;
+      widget.habits[widget.habits.indexOf(oldHabit)] = newHabit;
     });
   }
 
@@ -83,16 +122,17 @@ class _NavigationState extends State<Navigation> {
     setState(() {
       // Can potentially save a query by storing the document id in the habit object
       // or by querying the cache instead of the server
-      int index = habits.indexOf(oldHabit);
+      int index = widget.habits.indexOf(oldHabit);
       db
           .collection('habits')
-          .where('id', isEqualTo: habits[index].id)
+          .where('id', isEqualTo: widget.habits[index].id)
           .get()
           .then((QuerySnapshot querySnapshot) {
         db.collection('habits').doc(querySnapshot.docs[0].id).delete().then(
-            (doc) => debugPrint('deleted habit with id ${habits[index].id}'),
-            onError: (error) =>
-                debugPrint('error deleting habit with id ${habits[index].id}'));
+            (doc) =>
+                debugPrint('deleted habit with id ${widget.habits[index].id}'),
+            onError: (error) => debugPrint(
+                'error deleting habit with id ${widget.habits[index].id}'));
 
         // querySnapshot.docs[0].reference.delete().then(
         //     (doc) => print('deleted habit with id ${widget.habits[index].id}'),
@@ -100,7 +140,7 @@ class _NavigationState extends State<Navigation> {
         //         'error deleting habit with id ${widget.habits[index].id}'));
       });
 
-      habits.removeAt(index);
+      widget.habits.removeAt(index);
     });
   }
 
@@ -136,11 +176,13 @@ class _NavigationState extends State<Navigation> {
       body: <Widget>[
         /// Today page
         TodayView(
-            habits: habits, editHabit: editHabit, deleteHabit: deleteHabit),
+            habits: widget.habits,
+            editHabit: editHabit,
+            deleteHabit: deleteHabit),
 
         /// Habits page
         HabitListView(
-            habits: habits,
+            habits: widget.habits,
             addHabit: addHabit,
             editHabit: editHabit,
             deleteHabit: deleteHabit),
