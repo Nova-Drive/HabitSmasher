@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:blur/blur.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:habitsmasher/buttons/date_picker.dart';
@@ -35,6 +37,7 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
   bool? addLocation = false;
   final ImagePicker _picker = ImagePicker();
   XFile? _image;
+  bool _isUploading = false;
 
   @override
   void initState() {
@@ -67,11 +70,14 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
 
   Future<LocationData> locationService() async {
     Location location = Location();
+    Completer<LocationData> completer = Completer();
     await Future.wait(
         [location.requestPermission(), location.requestService()]);
     // await location.requestService();
+
     LocationData place =
         await Future.wait([location.getLocation()]).then((value) => value[0]);
+
     return place;
   }
 
@@ -83,13 +89,16 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
     }
   }
 
-  void _onSubmit() {
+  void _onSubmit() async {
     try {
       _validate();
     } on Exception catch (e) {
       showException(context, e);
       return;
     }
+    setState(() {
+      _isUploading = true;
+    });
 
     HabitEvent event = HabitEvent(
         comment: commentController.text, date: date, habit: widget.habit);
@@ -98,6 +107,10 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
       debugPrint('Adding location');
 
       locationService().then((place) => event.location = place);
+
+      while (event.location == null) {
+        await Future.delayed(const Duration(milliseconds: 100));
+      }
       // locationService().then((LocationData place) {
       //   event.location = place;
       // });
@@ -121,7 +134,8 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
     }
   }
 
-  void _addHabitEvent(HabitEvent event) {
+  void _addHabitEvent(HabitEvent event) async {
+    widget.addHabitEvent!(event);
     FirebaseFirestore db = FirebaseFirestore.instance;
     db
         .collection("habits")
@@ -134,10 +148,10 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
           .collection("events")
           .add(event.toMap());
     });
-    widget.addHabitEvent!(event);
   }
 
   void _editHabitEvent(HabitEvent oldEvent, HabitEvent newEvent) async {
+    widget.editHabitEvent!(oldEvent);
     FirebaseFirestore db = FirebaseFirestore.instance;
     String oldHabitId = "";
     // String eventId = "";
@@ -183,7 +197,6 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
             .update(newEvent.toMap());
       });
     });
-    widget.editHabitEvent!(oldEvent);
   }
 
   @override
@@ -194,57 +207,74 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
             ? 'Add Habit Event'
             : 'Edit Habit Event'),
       ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Column(
-              children: [
-                TextField(
-                  minLines: 3,
-                  maxLines: null,
-                  controller: commentController,
-                  decoration: InputDecoration(
-                      labelText: 'Comment',
-                      border: OutlineInputBorder(
-                          borderRadius: textFieldBorderRadius)),
+      body: GestureDetector(
+        // when the user taps outside of the text field
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: SingleChildScrollView(
+          child: Center(
+            child: Stack(alignment: Alignment.center, children: [
+              Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Column(
+                  children: [
+                    TextField(
+                      minLines: 3,
+                      maxLines: null,
+                      controller: commentController,
+                      decoration: InputDecoration(
+                          labelText: 'Comment',
+                          border: OutlineInputBorder(
+                              borderRadius: textFieldBorderRadius)),
+                    ),
+                    const Padding(padding: EdgeInsets.all(7)),
+                    DatePicker(
+                        startDateController: dateController,
+                        setDate: (date) {
+                          setState(() {
+                            this.date = date;
+                            dateController.text =
+                                date.toString().substring(0, 10);
+                          });
+                        }),
+                    Row(children: [
+                      const Text('Add current location?'),
+                      Checkbox(
+                          value: addLocation,
+                          onChanged: (bool? value) => setState(() {
+                                addLocation = value!;
+                              }))
+                    ]),
+                    Row(children: [
+                      const Text("Add picture?"),
+                      const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 15)),
+                      ElevatedButton(
+                          onPressed: () {
+                            showModalBottomSheet(
+                                context: context,
+                                builder: (context) {
+                                  return modalSheet(context);
+                                });
+                          },
+                          child: const Text('Add Picture'))
+                    ]),
+                    const Padding(padding: EdgeInsets.all(15)),
+                    ElevatedButton(
+                        onPressed: _onSubmit, child: const Text('Add Event')),
+                    const Padding(padding: EdgeInsets.only(bottom: 20))
+                  ],
                 ),
-                const Padding(padding: EdgeInsets.all(7)),
-                DatePicker(
-                    startDateController: dateController,
-                    setDate: (date) {
-                      setState(() {
-                        this.date = date;
-                        dateController.text = date.toString().substring(0, 10);
-                      });
-                    }),
-                Row(children: [
-                  const Text('Add current location?'),
-                  Checkbox(
-                      value: addLocation,
-                      onChanged: (bool? value) => setState(() {
-                            addLocation = value!;
-                          }))
-                ]),
-                Row(children: [
-                  const Text("Add picture?"),
-                  const Padding(padding: EdgeInsets.symmetric(horizontal: 15)),
-                  ElevatedButton(
-                      onPressed: () {
-                        showModalBottomSheet(
-                            context: context,
-                            builder: (context) {
-                              return modalSheet(context);
-                            });
-                      },
-                      child: const Text('Add Picture'))
-                ]),
-                const Padding(padding: EdgeInsets.all(15)),
-                ElevatedButton(
-                    onPressed: _onSubmit, child: const Text('Add Event')),
-                const Padding(padding: EdgeInsets.only(bottom: 20))
-              ],
-            ),
+              ),
+              if (_isUploading)
+                SizedBox(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                ).blurred(
+                    overlay: const CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(Colors.green)))
+            ]),
           ),
         ),
       ),

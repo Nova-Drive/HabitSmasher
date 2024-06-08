@@ -10,6 +10,11 @@ import 'firebase_options.dart';
 
 /// Bug List:
 /// Sort event button works but only after second press
+/// Location doesn't appear in event detail view after event deloads
+///   - Location isn't being added in database upload
+///   - Pictures will have the same issue when implemented fully
+///   - UPDATE: Fix was to make a future.delayed in a while loop to wait for the location to be added
+/// delete button doesnt work in today view
 
 ThemeData theme = ThemeData(
   useMaterial3: true,
