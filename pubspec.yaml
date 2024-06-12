@@ -77,6 +77,7 @@ flutter:
 
   assets:
   - images/habit_temp_img.png
+  - images/login_logo.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

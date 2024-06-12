@@ -8,6 +8,9 @@ import 'package:uuid/uuid.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+GoogleSignIn _googleSignIn = GoogleSignIn();
+FirebaseAuth _auth = FirebaseAuth.instance;
+
 Future<List<HabitEvent>> getHabitEvents(Habit habit) async {
   List<HabitEvent> habitEvents = [];
   FirebaseFirestore db = FirebaseFirestore.instance;
@@ -15,12 +18,21 @@ Future<List<HabitEvent>> getHabitEvents(Habit habit) async {
   // wait .2 seconds just in case event is edited and we need to wait for the db to update
   await Future.delayed(const Duration(milliseconds: 250));
 
-  QuerySnapshot querySnapshot =
-      await db.collection('habits').where('id', isEqualTo: habit.id).get();
+  QuerySnapshot querySnapshot = await db
+      .collection("users")
+      .doc(_auth.currentUser!.uid)
+      .collection('habits')
+      .where('id', isEqualTo: habit.id)
+      .get();
   String habitId = querySnapshot.docs[0].id;
 
-  QuerySnapshot eventQuerySnapshot =
-      await db.collection('habits').doc(habitId).collection('events').get();
+  QuerySnapshot eventQuerySnapshot = await db
+      .collection("users")
+      .doc(_auth.currentUser!.uid)
+      .collection('habits')
+      .doc(habitId)
+      .collection('events')
+      .get();
 
   for (var doc in eventQuerySnapshot.docs) {
     habitEvents
@@ -34,7 +46,11 @@ Future<List<Habit>> getHabits() async {
   List<Habit> habits = [];
   FirebaseFirestore db = FirebaseFirestore.instance;
 
-  QuerySnapshot querySnapshot = await db.collection('habits').get();
+  QuerySnapshot querySnapshot = await db
+      .collection("users")
+      .doc(_auth.currentUser!.uid)
+      .collection('habits')
+      .get();
 
   for (var doc in querySnapshot.docs) {
     habits.add(Habit.fromMap(doc.data() as Map<String, dynamic>));
@@ -48,7 +64,8 @@ Future<String> uploadPic(File image, String habitId) async {
   FirebaseStorage storage = FirebaseStorage.instance;
 
   // habit id is not the same as the one in the db im pretty sure
-  Reference reference = storage.ref().child("images/$habitId$randomId");
+  Reference reference =
+      storage.ref().child("images/${_auth.currentUser!.uid}/$randomId");
 
   //Upload the file to firebase
   UploadTask uploadTask = reference.putFile(image);
@@ -69,7 +86,7 @@ Future<String> uploadPic(File image, String habitId) async {
 
 Future<UserCredential> signInWithGoogle() async {
   // Trigger the authentication flow
-  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+  final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
   // Obtain the auth details from the request
   final GoogleSignInAuthentication? googleAuth =
@@ -82,9 +99,11 @@ Future<UserCredential> signInWithGoogle() async {
   );
 
   // Once signed in, return the UserCredential
-  return await FirebaseAuth.instance.signInWithCredential(credential);
+  return await _auth.signInWithCredential(credential);
 }
 
 Future<void> signOut() async {
-  await FirebaseAuth.instance.signOut();
+  await _auth.signOut();
+  await _googleSignIn.signOut();
+  debugPrint(FirebaseAuth.instance.currentUser.toString());
 }

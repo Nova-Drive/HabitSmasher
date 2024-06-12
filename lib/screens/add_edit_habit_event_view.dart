@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:blur/blur.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:habitsmasher/buttons/date_picker.dart';
 import 'package:habitsmasher/extensions.dart';
@@ -37,6 +38,8 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
   final ImagePicker _picker = ImagePicker();
   XFile? _image;
   bool _isUploading = false;
+  FirebaseAuth auth = FirebaseAuth.instance;
+  FirebaseFirestore db = FirebaseFirestore.instance;
 
   @override
   void initState() {
@@ -138,13 +141,16 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
 
   void _addHabitEvent(HabitEvent event) async {
     widget.addHabitEvent!(event);
-    FirebaseFirestore db = FirebaseFirestore.instance;
     db
+        .collection("users")
+        .doc(auth.currentUser!.uid)
         .collection("habits")
         .where("id", isEqualTo: widget.habit.id)
         .get()
         .then((QuerySnapshot querySnapshot) {
       db
+          .collection("users")
+          .doc(auth.currentUser!.uid)
           .collection("habits")
           .doc(querySnapshot.docs[0].id)
           .collection("events")
@@ -154,37 +160,19 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
 
   void _editHabitEvent(HabitEvent oldEvent, HabitEvent newEvent) async {
     widget.editHabitEvent!(oldEvent);
-    FirebaseFirestore db = FirebaseFirestore.instance;
     String oldHabitId = "";
-    // String eventId = "";
 
-    // await db
-    //     .collection("habits")
-    //     .where("id", isEqualTo: widget.habit.id)
-    //     .get()
-    //     .then((QuerySnapshot querySnapshot) {
-    //   oldHabitId = querySnapshot.docs[0].id;
-    // });
-    // await db
-    //     .collection("habits")
-    //     .doc(oldHabitId)
-    //     .collection("events")
-    //     .where("id", isEqualTo: oldEvent.id)
-    //     .get()
-    //     .then((QuerySnapshot querySnapshotTwo) {
-    //   eventId = querySnapshotTwo.docs[0].id;
-    // });
-    // await db
-    //         .collection("habits")
-    //         .doc(querySnapshot.docs[0].id)
-    //         .update(newEvent.toMap());
     db
+        .collection("users")
+        .doc(auth.currentUser!.uid)
         .collection("habits")
         .where("id", isEqualTo: widget.habit.id)
         .get()
         .then((QuerySnapshot querySnapshot) {
       oldHabitId = querySnapshot.docs[0].id;
       db
+          .collection("users")
+          .doc(auth.currentUser!.uid)
           .collection("habits")
           .doc(oldHabitId)
           .collection("events")
@@ -192,6 +180,8 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
           .get()
           .then((QuerySnapshot querySnapshot) {
         db
+            .collection("users")
+            .doc(auth.currentUser!.uid)
             .collection("habits")
             .doc(oldHabitId)
             .collection("events")

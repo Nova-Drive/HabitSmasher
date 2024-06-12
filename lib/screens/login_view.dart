@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:habitsmasher/main.dart';
 import 'package:habitsmasher/network/network.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sign_in_button/sign_in_button.dart';
@@ -18,6 +19,10 @@ class _LoginViewState extends State<LoginView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.asset(
+              "images/login_logo.png",
+              width: 250,
+            ),
             habitSmasherTitle(),
             const Text("The new way to create good habits."),
             SignInButton(
@@ -26,7 +31,9 @@ class _LoginViewState extends State<LoginView> {
                   borderRadius: BorderRadius.circular(10)),
               onPressed: () async {
                 await signInWithGoogle();
-                debugPrint(FirebaseAuth.instance.currentUser.toString());
+                debugPrint(FirebaseAuth.instance.currentUser!.uid);
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => Navigation()));
               },
               text: 'Sign in with Google',
             ),

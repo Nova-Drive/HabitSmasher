@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:habitsmasher/models/habit.dart';
@@ -39,10 +40,14 @@ class _HabitEventListState extends State<HabitEventList> {
   void _deleteEvent(int index) async {
     HabitEvent event = widget.habitEvents[index];
     FirebaseFirestore db = FirebaseFirestore.instance;
+    FirebaseAuth auth = FirebaseAuth.instance;
+
     String habitId = "";
     String eventId = "";
 
     await db
+        .collection("users")
+        .doc(auth.currentUser!.uid)
         .collection("habits")
         .where("id", isEqualTo: widget.habit.id)
         .get()
@@ -50,6 +55,8 @@ class _HabitEventListState extends State<HabitEventList> {
       habitId = querySnapshot.docs[0].id;
     });
     await db
+        .collection("users")
+        .doc(auth.currentUser!.uid)
         .collection("habits")
         .doc(habitId)
         .collection("events")
@@ -60,6 +67,8 @@ class _HabitEventListState extends State<HabitEventList> {
     });
 
     await db
+        .collection("users")
+        .doc(auth.currentUser!.uid)
         .collection("habits")
         .doc(habitId)
         .collection("events")

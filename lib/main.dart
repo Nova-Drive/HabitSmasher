@@ -8,6 +8,7 @@ import 'package:habitsmasher/screens/login_view.dart';
 import 'package:habitsmasher/screens/test_widget.dart';
 import 'package:habitsmasher/screens/today_view.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:habitsmasher/theme.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -15,65 +16,30 @@ import 'package:firebase_auth/firebase_auth.dart';
 /// Sort event button works but only after second press
 /// delete button doesnt work in today view
 /// refactor making habits to use the ID from the db instead of the random one
+/// editing an event with a picture without replacing it causes the picture link to be lost
+/// Strength gauge shows NaN/infinity when there are no events
 ///
 /// TO ADD:
-/// - Flutter Secure Storage for caching user login
+/// - Colour indicator to strength gauge (green yellow red)
 ///
-
-ThemeData theme = ThemeData(
-  useMaterial3: true,
-  primarySwatch: Colors.green,
-  primaryColor: Colors.green[300],
-  hintColor: Colors.green[300],
-  scaffoldBackgroundColor: Colors.green[100],
-  appBarTheme: AppBarTheme(
-    backgroundColor: Colors.green[400],
-  ),
-  floatingActionButtonTheme: const FloatingActionButtonThemeData(
-    backgroundColor: Colors.green,
-  ),
-  bottomNavigationBarTheme: BottomNavigationBarThemeData(
-    backgroundColor: Colors.green[100],
-    selectedItemColor: Colors.green[400],
-    unselectedItemColor: Colors.green[300],
-  ),
-  cardTheme: CardTheme(
-    color: Colors.green[200],
-    shadowColor: Colors.green[400],
-    elevation: 10,
-  ),
-);
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const ProviderScope(child: HabitSmasherApp()));
+  runApp(ProviderScope(child: HabitSmasherApp()));
 }
 
+// ignore: must_be_immutable
 class HabitSmasherApp extends StatelessWidget {
-  const HabitSmasherApp({super.key});
+  HabitSmasherApp({super.key});
+  bool loggedIn = FirebaseAuth.instance.currentUser != null;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: theme,
-      home: FutureBuilder(
-          future: getHabits(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              List<Habit> habits = snapshot.data as List<Habit>;
-              return Navigation(habits: habits);
-            } else {
-              return const Center(
-                  child: CircularProgressIndicator(
-                color: Colors.green,
-                semanticsLabel: 'Loading habits',
-              ));
-            }
-          }),
-    );
+        theme: theme, home: loggedIn ? Navigation() : const LoginView());
   }
 }
 
@@ -81,41 +47,40 @@ class HabitSmasherApp extends StatelessWidget {
 // could probably fix this by putting the list methods in the main class
 // ignore: must_be_immutable
 class Navigation extends StatefulWidget {
-  Navigation({super.key, required this.habits});
-  List<Habit> habits;
+  Navigation({super.key});
+  List<Habit> habits = [];
   @override
   State<Navigation> createState() => _NavigationState();
 }
 
 class _NavigationState extends State<Navigation> {
-  int currentPageIndex = 2;
+  int currentPageIndex = 0;
   FirebaseFirestore db = FirebaseFirestore.instance;
-
-  @override
-  void initState() {
-    super.initState();
-    getHabits().then((list) {
-      setState(() {
-        widget.habits = list;
-      });
-    });
-  }
+  FirebaseAuth auth = FirebaseAuth.instance;
 
   void addHabit(Habit habit) {
     setState(() {
       widget.habits.add(habit);
     });
-    db.collection('habits').add(habit.toMap());
+    db
+        .collection("users")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('habits')
+        .add(habit.toMap());
   }
 
   void editHabit(Habit newHabit, Habit oldHabit) {
     setState(() {
       db
+          .collection("users")
+          .doc(auth.currentUser!.uid)
           .collection('habits')
           .where('id', isEqualTo: oldHabit.id)
           .get()
           .then((QuerySnapshot querySnapshot) {
         db
+            .collection("users")
+            .doc(auth.currentUser!.uid)
             .collection('habits')
             .doc(querySnapshot.docs[0].id)
             .update(newHabit.toMap())
@@ -133,15 +98,23 @@ class _NavigationState extends State<Navigation> {
       // or by querying the cache instead of the server
       int index = widget.habits.indexOf(oldHabit);
       db
+          .collection("users")
+          .doc(auth.currentUser!.uid)
           .collection('habits')
           .where('id', isEqualTo: widget.habits[index].id)
           .get()
           .then((QuerySnapshot querySnapshot) {
-        db.collection('habits').doc(querySnapshot.docs[0].id).delete().then(
-            (doc) =>
-                debugPrint('deleted habit with id ${widget.habits[index].id}'),
-            onError: (error) => debugPrint(
-                'error deleting habit with id ${widget.habits[index].id}'));
+        db
+            .collection("users")
+            .doc(auth.currentUser!.uid)
+            .collection('habits')
+            .doc(querySnapshot.docs[0].id)
+            .delete()
+            .then(
+                (doc) => debugPrint(
+                    'deleted habit with id ${widget.habits[index].id}'),
+                onError: (error) => debugPrint(
+                    'error deleting habit with id ${widget.habits[index].id}'));
 
         // querySnapshot.docs[0].reference.delete().then(
         //     (doc) => print('deleted habit with id ${widget.habits[index].id}'),
@@ -182,23 +155,37 @@ class _NavigationState extends State<Navigation> {
           ),
         ],
       ),
-      body: <Widget>[
-        /// Today page
-        TodayView(
-            habits: widget.habits,
-            editHabit: editHabit,
-            deleteHabit: deleteHabit),
+      body: FutureBuilder(
+        future: getHabits(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            widget.habits = snapshot.data as List<Habit>;
+            return <Widget>[
+              /// Today page
+              TodayView(
+                  habits: widget.habits,
+                  editHabit: editHabit,
+                  deleteHabit: deleteHabit),
 
-        /// Habits page
-        HabitListView(
-            habits: widget.habits,
-            addHabit: addHabit,
-            editHabit: editHabit,
-            deleteHabit: deleteHabit),
+              /// Habits page
+              HabitListView(
+                  habits: widget.habits,
+                  addHabit: addHabit,
+                  editHabit: editHabit,
+                  deleteHabit: deleteHabit),
 
-        /// Profile page
-        const LoginView()
-      ][currentPageIndex],
+              /// Profile page
+              const HomePage()
+            ][currentPageIndex];
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 }
