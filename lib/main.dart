@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:habitsmasher/models/habit.dart';
 import 'package:habitsmasher/network/network.dart';
 import 'package:habitsmasher/screens/habit_list_view.dart';
@@ -7,11 +8,16 @@ import 'package:habitsmasher/screens/test_widget.dart';
 import 'package:habitsmasher/screens/today_view.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 /// Bug List:
 /// Sort event button works but only after second press
 /// delete button doesnt work in today view
 /// refactor making habits to use the ID from the db instead of the random one
+///
+/// TO ADD:
+/// - Flutter Secure Storage for caching user login
+///
 
 ThemeData theme = ThemeData(
   useMaterial3: true,
@@ -42,7 +48,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const HabitSmasherApp());
+  runApp(const ProviderScope(child: HabitSmasherApp()));
 }
 
 class HabitSmasherApp extends StatelessWidget {
