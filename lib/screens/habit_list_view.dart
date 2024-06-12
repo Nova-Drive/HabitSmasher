@@ -35,7 +35,9 @@ class _HabitListViewState extends State<HabitListView> {
             IconButton(
               padding: const EdgeInsets.only(right: 20),
               icon: const Icon(Icons.add),
-              style: ButtonStyle(iconSize: WidgetStateProperty.all(40)),
+              style: ButtonStyle(
+                  iconSize: WidgetStateProperty.all(40),
+                  iconColor: WidgetStateProperty.all(Colors.black)),
               onPressed: () {
                 // Add a new habit
                 Navigator.push(

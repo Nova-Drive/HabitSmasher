@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:blur/blur.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -70,7 +69,6 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
 
   Future<LocationData> locationService() async {
     Location location = Location();
-    Completer<LocationData> completer = Completer();
     await Future.wait(
         [location.requestPermission(), location.requestService()]);
     // await location.requestService();
@@ -118,7 +116,11 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
 
     //picture stuff goes here
     if (_image != null) {
-      uploadPic(File(_image!.path)).then((url) => event.imagePath = url);
+      uploadPic(File(_image!.path), widget.habit.id)
+          .then((url) => event.imagePath = url);
+      while (event.imagePath == null) {
+        await Future.delayed(const Duration(milliseconds: 100));
+      }
     }
 
     if (operation == Operation.edit) {
@@ -223,10 +225,8 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
                       minLines: 3,
                       maxLines: null,
                       controller: commentController,
-                      decoration: InputDecoration(
-                          labelText: 'Comment',
-                          border: OutlineInputBorder(
-                              borderRadius: textFieldBorderRadius)),
+                      cursorColor: Colors.brown,
+                      decoration: inputDecoration(labelText: "Comment"),
                     ),
                     const Padding(padding: EdgeInsets.all(7)),
                     DatePicker(

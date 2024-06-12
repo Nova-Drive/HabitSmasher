@@ -103,62 +103,62 @@ class _AddEditHabitViewState extends State<AddEditHabitView> {
               widget.operation == Operation.add ? 'Add Habit' : 'Edit Habit'),
         ),
         body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              children: [
-                TextField(
-                  controller: habitNameController,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Habit Name',
+          child: GestureDetector(
+            // unfocus the text fields when the user taps outside of them
+            onTap: () {
+              FocusScope.of(context).unfocus();
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                children: [
+                  TextField(
+                    controller: habitNameController,
+                    decoration: inputDecoration(labelText: "Habit Name"),
                   ),
-                ),
-                const _Spacer(),
-                TextField(
-                  controller: habitDescriptionController,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Habit Description',
+                  const _Spacer(),
+                  TextField(
+                    controller: habitDescriptionController,
+                    decoration: inputDecoration(labelText: "Description"),
                   ),
-                ),
-                const _Spacer(),
-                // Date with row containing textbox and calendar icon
+                  const _Spacer(),
+                  // Date with row containing textbox and calendar icon
 
-                // Weekdays with row containing 7 checkboxes
-                WeekdayButtons(onChecked: _onChecked, checked: [
-                  monday,
-                  tuesday,
-                  wednesday,
-                  thursday,
-                  friday,
-                  saturday,
-                  sunday
-                ]),
+                  // Weekdays with row containing 7 checkboxes
+                  WeekdayButtons(onChecked: _onChecked, checked: [
+                    monday,
+                    tuesday,
+                    wednesday,
+                    thursday,
+                    friday,
+                    saturday,
+                    sunday
+                  ]),
 
-                const _Spacer(),
+                  const _Spacer(),
 
-                DatePicker(
-                    startDateController: startDateController,
-                    setDate: (date) {
-                      setState(() {
-                        startDate = date;
-                      });
-                    }),
-                const _Spacer(),
+                  DatePicker(
+                      startDateController: startDateController,
+                      setDate: (date) {
+                        setState(() {
+                          startDate = date;
+                        });
+                      }),
+                  const _Spacer(),
 
-                widget.operation == Operation.edit
-                    ? ElevatedButton(
-                        style: theme.elevatedButtonTheme.style,
-                        onPressed: _editHabit,
-                        child: const Text("Edit Habit"),
-                      )
-                    : ElevatedButton(
-                        style: theme.elevatedButtonTheme.style,
-                        onPressed: _makeHabit,
-                        child: const Text("Add Habit"),
-                      )
-              ],
+                  widget.operation == Operation.edit
+                      ? ElevatedButton(
+                          style: theme.elevatedButtonTheme.style,
+                          onPressed: _editHabit,
+                          child: const Text("Edit Habit"),
+                        )
+                      : ElevatedButton(
+                          style: theme.elevatedButtonTheme.style,
+                          onPressed: _makeHabit,
+                          child: const Text("Add Habit"),
+                        )
+                ],
+              ),
             ),
           ),
         ),

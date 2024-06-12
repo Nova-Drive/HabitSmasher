@@ -20,10 +20,18 @@ class HabitEventDetailView extends StatelessWidget {
               child: Column(
             children: [
               _BorderBox(
-                width: MediaQuery.of(context).size.width * 0.50,
-                child: Image.asset(
-                  "images/habit_temp_img.png",
-                ),
+                width: MediaQuery.of(context).size.width * 0.9,
+                child: event.imagePath != null
+                    ? Image.network(
+                        event.imagePath!,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const CircularProgressIndicator();
+                        },
+                      )
+                    : Image.asset(
+                        "images/habit_temp_img.png",
+                      ),
               ),
               if (event.location != null)
                 _BorderBox(child: MapBox(event: event)),

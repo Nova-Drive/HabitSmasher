@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habitsmasher/extensions.dart';
+import 'package:habitsmasher/theme.dart';
 
 class DatePicker extends StatefulWidget {
   const DatePicker(
@@ -23,13 +24,9 @@ class _DatePickerState extends State<DatePicker> {
               readOnly: true,
               controller: widget.startDateController,
               // startDate.toString().substring(0, 10)
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: textFieldBorderRadius,
-                ),
-                labelText: "Start Date",
-                hintText: startDate.toString().substring(0, 10),
-              ),
+              decoration: inputDecoration(
+                  labelText: "Date",
+                  hintText: startDate.toString().substring(0, 10)),
               onTap: () => showDatePicker(
                     context: context,
                     initialDate: startDate,
@@ -44,9 +41,9 @@ class _DatePickerState extends State<DatePicker> {
         ),
         const SizedBox(width: 30),
         Ink(
-          decoration: const ShapeDecoration(
-            color: Colors.amber,
-            shape: CircleBorder(),
+          decoration: ShapeDecoration(
+            color: theme.primaryColor,
+            shape: const CircleBorder(),
           ),
           child: IconButton(
               onPressed: () => showDatePicker(

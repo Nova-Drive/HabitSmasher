@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:habitsmasher/models/habit.dart';
 import 'package:habitsmasher/models/habit_event.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:uuid/uuid.dart';
 
 Future<List<HabitEvent>> getHabitEvents(Habit habit) async {
   List<HabitEvent> habitEvents = [];
@@ -39,21 +41,26 @@ Future<List<Habit>> getHabits() async {
   return habits;
 }
 
-Future<String> uploadPic(File image) async {
+Future<String> uploadPic(File image, String habitId) async {
+  String randomId = const Uuid().v4();
   FirebaseStorage storage = FirebaseStorage.instance;
-  //Create a reference to the location you want to upload to in firebase
-  Reference reference = storage.ref().child("images/test");
+
+  // habit id is not the same as the one in the db im pretty sure
+  Reference reference = storage.ref().child("images/$habitId$randomId");
 
   //Upload the file to firebase
   UploadTask uploadTask = reference.putFile(image);
 
   String url = '';
-  // await uploadTask.whenComplete(() async {
-  //   url = await reference.getDownloadURL();
-  //   return url;
-  // });
 
-  uploadTask.whenComplete(
-      () => reference.getDownloadURL().then((result) => url = result));
+  uploadTask.whenComplete(() async {
+    url = await reference.getDownloadURL();
+  });
+
+  while (url == '') {
+    debugPrint('waiting for url');
+    await Future.delayed(const Duration(milliseconds: 100));
+  }
+  debugPrint(url);
   return url;
 }

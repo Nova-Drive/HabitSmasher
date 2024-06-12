@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 
+/// Catch-all file for things like extensions enums and other various things
+
 extension StringExtension on String {
   String capitalize() {
     return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
@@ -14,8 +16,6 @@ extension DateTimeExtension on DateTime {
 }
 
 enum Operation { add, edit }
-
-BorderRadius textFieldBorderRadius = BorderRadius.circular(20);
 
 extension LocationExtension on LocationData {
   Map<String, dynamic> toJson() {
@@ -42,4 +42,21 @@ void showException(BuildContext context, Exception e) {
           ],
         );
       });
+}
+
+OutlineInputBorder textFieldBorder() {
+  return const OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.brown),
+      borderRadius: BorderRadius.all(Radius.circular(20)));
+}
+
+// TODO: implement inputDecoration for all text fields
+InputDecoration inputDecoration({required String labelText, String? hintText}) {
+  return InputDecoration(
+    border: textFieldBorder(),
+    focusedBorder: textFieldBorder(),
+    labelText: labelText,
+    labelStyle: const TextStyle(color: Colors.brown),
+    hintText: hintText,
+  );
 }
