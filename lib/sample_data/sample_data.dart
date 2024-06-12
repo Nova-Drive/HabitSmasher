@@ -2,11 +2,7 @@ import 'dart:math';
 
 import 'package:habitsmasher/models/habit.dart';
 import 'package:habitsmasher/models/habit_event.dart';
-import 'package:habitsmasher/models/user.dart';
 import 'package:location/location.dart';
-
-User user1 = User(username: 'user1', email: 'cameron@gmail.com');
-User user2 = User(username: 'user2', email: 'matthew@gmail.com');
 
 Future<LocationData> locationService() async {
   Location location = Location();

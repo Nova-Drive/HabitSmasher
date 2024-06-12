@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:habitsmasher/models/habit.dart';
 import 'package:habitsmasher/network/network.dart';
 import 'package:habitsmasher/screens/habit_list_view.dart';
+import 'package:habitsmasher/screens/login_view.dart';
 import 'package:habitsmasher/screens/test_widget.dart';
 import 'package:habitsmasher/screens/today_view.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -87,7 +88,7 @@ class Navigation extends StatefulWidget {
 }
 
 class _NavigationState extends State<Navigation> {
-  int currentPageIndex = 0;
+  int currentPageIndex = 2;
   FirebaseFirestore db = FirebaseFirestore.instance;
 
   @override
@@ -196,7 +197,7 @@ class _NavigationState extends State<Navigation> {
             deleteHabit: deleteHabit),
 
         /// Profile page
-        const HomePage()
+        const LoginView()
       ][currentPageIndex],
     );
   }
