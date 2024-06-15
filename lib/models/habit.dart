@@ -59,6 +59,9 @@ class Habit {
 
   int numPossibleEvents() {
     // TODO: make sure this works
+    if (recurranceDays.isEmpty) {
+      return 0;
+    }
     var numDays = DateTime.now().difference(startDate).inDays;
     var numWeeks = numDays ~/ 7;
     var numExtraDays = numDays % 7;

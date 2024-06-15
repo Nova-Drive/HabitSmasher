@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:habitsmasher/buttons/weekday_button.dart';
+import 'package:habitsmasher/widgets/weekday_button.dart';
 import 'package:habitsmasher/extensions.dart';
-import 'package:habitsmasher/habit_strength_gauge.dart';
+import 'package:habitsmasher/widgets/habit_strength_gauge.dart';
 import 'package:habitsmasher/models/habit.dart';
 import 'package:habitsmasher/models/habit_event.dart';
 import 'package:habitsmasher/network/network.dart';

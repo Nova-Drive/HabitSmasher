@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:habitsmasher/buttons/date_picker.dart';
-import 'package:habitsmasher/buttons/weekday_button.dart';
+import 'package:habitsmasher/widgets/date_picker.dart';
+import 'package:habitsmasher/widgets/weekday_button.dart';
 import 'package:habitsmasher/models/habit.dart';
 import 'package:habitsmasher/extensions.dart';
 import 'package:habitsmasher/theme.dart';
