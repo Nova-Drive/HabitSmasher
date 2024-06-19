@@ -19,7 +19,7 @@ class HabitEventDetailView extends StatelessWidget {
           child: Center(
               child: Column(
             children: [
-              _BorderBox(
+              BorderBox(
                 width: MediaQuery.of(context).size.width * 0.9,
                 child: event.imagePath != null
                     ? Image.network(
@@ -34,8 +34,8 @@ class HabitEventDetailView extends StatelessWidget {
                       ),
               ),
               if (event.location != null)
-                _BorderBox(child: MapBox(event: event)),
-              _BorderBox(
+                BorderBox(child: MapBox(event: event)),
+              BorderBox(
                 width: double.infinity,
                 child:
                     Text(event.comment, style: const TextStyle(fontSize: 18)),
@@ -44,30 +44,6 @@ class HabitEventDetailView extends StatelessWidget {
             ],
           )),
         ));
-  }
-}
-
-class _BorderBox extends StatelessWidget {
-  final Widget child;
-  final Color backgroundColor = Colors.green[50]!;
-  final double? width;
-
-  _BorderBox({required this.child, this.width});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Container(
-          padding: const EdgeInsets.all(8),
-          width: width ?? MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            color: backgroundColor,
-            border: Border.all(color: Colors.brown, width: 3),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: child),
-    );
   }
 }
 

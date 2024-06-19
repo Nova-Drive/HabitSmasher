@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:habitsmasher/models/habit.dart';
 import 'package:habitsmasher/models/habit_event.dart';
+import 'package:habitsmasher/theme.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class HabitStrengthGauge extends StatelessWidget {
@@ -16,9 +17,22 @@ class HabitStrengthGauge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double habitStrength = 0;
+    Color outerColor = Colors.amber;
+    Color innerColor = Colors.amberAccent;
 
     if (habit.numPossibleEvents() != 0) {
       habitStrength = habitEvents.length / habit.numPossibleEvents() * 100;
+      habitStrength = habitStrength > 100 ? 100 : habitStrength;
+    }
+    if (habitStrength < 50) {
+      outerColor = Colors.red;
+      innerColor = Colors.redAccent;
+    } else if (habitStrength < 75) {
+      outerColor = Colors.amber;
+      innerColor = Colors.amberAccent;
+    } else {
+      outerColor = theme.primaryColorDark;
+      innerColor = theme.primaryColor;
     }
 
     return SizedBox(
@@ -32,8 +46,8 @@ class HabitStrengthGauge extends StatelessWidget {
                     positionFactor: 0.5,
                     widget: CircleAvatar(
                         radius: MediaQuery.of(context).size.width *
-                            0.24, //maybe change this later
-                        backgroundColor: Colors.amberAccent,
+                            0.25, //maybe change this later
+                        backgroundColor: innerColor,
                         child: Text(
                           "Habit Strength\n${habitStrength.toStringAsFixed(0)}%",
                           style: const TextStyle(
@@ -48,9 +62,9 @@ class HabitStrengthGauge extends StatelessWidget {
               showTicks: false,
               startAngle: 270,
               endAngle: 270,
-              axisLineStyle: const AxisLineStyle(
+              axisLineStyle: AxisLineStyle(
                 thickness: 1,
-                color: Colors.amber,
+                color: outerColor,
                 thicknessUnit: GaugeSizeUnit.factor,
               ),
               pointers: <GaugePointer>[

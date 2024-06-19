@@ -84,6 +84,12 @@ Future<String> uploadPic(File image, String habitId) async {
   return url;
 }
 
+void deletePic(String url) {
+  FirebaseStorage storage = FirebaseStorage.instance;
+  Reference reference = storage.refFromURL(url);
+  reference.delete();
+}
+
 Future<UserCredential> signInWithGoogle() async {
   // Trigger the authentication flow
   final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();

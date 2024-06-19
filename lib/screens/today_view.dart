@@ -41,9 +41,13 @@ class _TodayViewState extends State<TodayView> {
               Text(Days.values[widget.dayOfWeek].name.capitalize(),
                   style: theme.appBarTheme.titleTextStyle),
         ),
-        body: habitCards(
-            habits: habitsForToday,
-            editHabit: widget.editHabit,
-            deleteHabit: widget.deleteHabit));
+        body: habitsForToday.isEmpty
+            ? const Center(
+                child: Text("No Habits for today!",
+                    style: TextStyle(fontSize: 20)))
+            : habitCards(
+                habits: habitsForToday,
+                editHabit: widget.editHabit,
+                deleteHabit: widget.deleteHabit));
   }
 }

@@ -60,3 +60,27 @@ InputDecoration inputDecoration({required String labelText, String? hintText}) {
     hintText: hintText,
   );
 }
+
+class BorderBox extends StatelessWidget {
+  final Widget child;
+  final Color backgroundColor = Colors.green[50]!;
+  final double? width;
+
+  BorderBox({super.key, required this.child, this.width});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Container(
+          padding: const EdgeInsets.all(8),
+          width: width ?? MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            border: Border.all(color: Colors.brown, width: 3),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: child),
+    );
+  }
+}

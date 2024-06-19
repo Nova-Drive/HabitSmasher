@@ -159,6 +159,9 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
   }
 
   void _editHabitEvent(HabitEvent oldEvent, HabitEvent newEvent) async {
+    newEvent.imagePath ??= oldEvent.imagePath;
+    newEvent.location ??= oldEvent.location;
+
     widget.editHabitEvent!(oldEvent);
     String oldHabitId = "";
 
@@ -250,6 +253,8 @@ class _AddEditHabitEventViewState extends State<AddEditHabitEventView> {
                           },
                           child: const Text('Add Picture'))
                     ]),
+                    if (_image != null)
+                      BorderBox(child: Image.file(File(_image!.path))),
                     const Padding(padding: EdgeInsets.all(15)),
                     ElevatedButton(
                         onPressed: _onSubmit, child: const Text('Add Event')),

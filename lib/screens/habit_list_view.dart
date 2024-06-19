@@ -50,10 +50,15 @@ class _HabitListViewState extends State<HabitListView> {
             ),
           ],
         ),
-        body: habitCards(
-            habits: widget.habits,
-            editHabit: widget.editHabit,
-            deleteHabit: widget.deleteHabit));
+        body: widget.habits.isEmpty
+            ? const Center(
+                child: Text("No Habits yet!\nWhy don't you add one?",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 20)))
+            : habitCards(
+                habits: widget.habits,
+                editHabit: widget.editHabit,
+                deleteHabit: widget.deleteHabit));
   }
 }
 

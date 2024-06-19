@@ -13,14 +13,8 @@ import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 /// Bug List:
-/// Sort event button works but only after second press
-/// delete button doesnt work in today view
-/// refactor making habits to use the ID from the db instead of the random one
-/// editing an event with a picture without replacing it causes the picture link to be lost
-/// Strength gauge shows NaN/infinity when there are no events
 ///
 /// TO ADD:
-/// - Colour indicator to strength gauge (green yellow red)
 ///
 
 Future<void> main() async {
@@ -57,6 +51,18 @@ class _NavigationState extends State<Navigation> {
   int currentPageIndex = 0;
   FirebaseFirestore db = FirebaseFirestore.instance;
   FirebaseAuth auth = FirebaseAuth.instance;
+  bool loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    getHabits().then((value) {
+      setState(() {
+        loading = false;
+        widget.habits = value;
+      });
+    });
+  }
 
   void addHabit(Habit habit) {
     setState(() {
@@ -129,63 +135,54 @@ class _NavigationState extends State<Navigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
-      bottomNavigationBar: NavigationBar(
-        onDestinationSelected: (int index) {
-          setState(() {
-            currentPageIndex = index;
-          });
-        },
-        backgroundColor: Colors.green[100],
-        indicatorColor: Colors.green[400],
-        selectedIndex: currentPageIndex,
-        destinations: const <Widget>[
-          NavigationDestination(
-            selectedIcon: Icon(Icons.calendar_month_outlined),
-            icon: Icon(Icons.home_outlined),
-            label: 'Today',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.list_outlined),
-            label: 'Habits',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_2_outlined),
-            label: 'Profile',
-          ),
-        ],
-      ),
-      body: FutureBuilder(
-        future: getHabits(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            widget.habits = snapshot.data as List<Habit>;
-            return <Widget>[
-              /// Today page
-              TodayView(
-                  habits: widget.habits,
-                  editHabit: editHabit,
-                  deleteHabit: deleteHabit),
+        extendBody: true,
+        bottomNavigationBar: NavigationBar(
+          onDestinationSelected: (int index) {
+            setState(() {
+              currentPageIndex = index;
+            });
+          },
+          backgroundColor: Colors.green[100],
+          indicatorColor: Colors.green[400],
+          selectedIndex: currentPageIndex,
+          destinations: const <Widget>[
+            NavigationDestination(
+              selectedIcon: Icon(Icons.calendar_month_outlined),
+              icon: Icon(Icons.home_outlined),
+              label: 'Today',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.list_outlined),
+              label: 'Habits',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.person_2_outlined),
+              label: 'Profile',
+            ),
+          ],
+        ),
+        body: loading
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.green,
+                ),
+              )
+            : <Widget>[
+                /// Today page
+                TodayView(
+                    habits: widget.habits,
+                    editHabit: editHabit,
+                    deleteHabit: deleteHabit),
 
-              /// Habits page
-              HabitListView(
-                  habits: widget.habits,
-                  addHabit: addHabit,
-                  editHabit: editHabit,
-                  deleteHabit: deleteHabit),
+                /// Habits page
+                HabitListView(
+                    habits: widget.habits,
+                    addHabit: addHabit,
+                    editHabit: editHabit,
+                    deleteHabit: deleteHabit),
 
-              /// Profile page
-              const HomePage()
-            ][currentPageIndex];
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-              ),
-            );
-          }
-        },
-      ),
-    );
+                /// Profile page
+                const HomePage()
+              ][currentPageIndex]);
   }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:habitsmasher/models/habit.dart';
 import 'package:habitsmasher/models/habit_event.dart';
+import 'package:habitsmasher/network/network.dart';
 import 'package:habitsmasher/screens/add_edit_habit_event_view.dart';
 import 'package:habitsmasher/screens/habit_event_card_view.dart';
 import 'package:habitsmasher/screens/habit_event_detail_view.dart';
@@ -77,6 +78,8 @@ class _HabitEventListState extends State<HabitEventList> {
     setState(() {
       widget.habitEvents.remove(event);
     });
+
+    deletePic(event.imagePath!);
   }
 
   void _editEvent(int index) {
