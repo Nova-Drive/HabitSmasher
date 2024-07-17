@@ -43,7 +43,7 @@ class HabitStrengthGauge extends StatelessWidget {
           RadialAxis(
               annotations: [
                 GaugeAnnotation(
-                    positionFactor: 0.5,
+                    positionFactor: 0,
                     widget: CircleAvatar(
                         radius: MediaQuery.of(context).size.width *
                             0.25, //maybe change this later
