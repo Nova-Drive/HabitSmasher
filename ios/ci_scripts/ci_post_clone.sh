@@ -33,5 +33,7 @@ pod deintegrate
 # Install CocoaPods dependencies.
 pod update # run `pod install` in the `ios` directory.
 
-flutter build ios --release --no-codesign
+flutter pub get
+
+flutter build ios --release
 exit 0
