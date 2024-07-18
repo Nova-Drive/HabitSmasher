@@ -38,7 +38,11 @@ class _HabitDetailViewState extends State<HabitDetailView> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.habit.name),
+          title: Text(
+            widget.habit.name,
+            textScaler:
+                TextScaler.linear(widget.habit.name.length > 15 ? 0.75 : 1),
+          ),
         ),
         body: FutureBuilder(
           future: getHabitEvents(widget.habit),
@@ -96,7 +100,9 @@ class _DetailView extends StatelessWidget {
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text(widget.habit.description),
+                  BorderBox(
+                      width: MediaQuery.of(context).size.width * 0.95,
+                      child: Text(widget.habit.description)),
                   const Padding(padding: EdgeInsets.all(5)),
                   WeekdayButtons(
                       checked: widget.habit.daysToBool(),

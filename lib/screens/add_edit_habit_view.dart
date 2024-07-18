@@ -114,6 +114,7 @@ class _AddEditHabitViewState extends State<AddEditHabitView> {
                 children: [
                   TextField(
                     controller: habitNameController,
+                    maxLength: 20,
                     decoration: inputDecoration(labelText: "Habit Name"),
                   ),
                   const _Spacer(),

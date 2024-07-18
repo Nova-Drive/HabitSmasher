@@ -44,19 +44,21 @@ class HabitStrengthGauge extends StatelessWidget {
               annotations: [
                 GaugeAnnotation(
                     positionFactor: 0,
-                    widget: CircleAvatar(
-                        radius: MediaQuery.of(context).size.width *
-                            0.25, //maybe change this later
-                        backgroundColor: innerColor,
-                        child: Text(
-                          "Habit Strength\n${habitStrength.toStringAsFixed(0)}%",
-                          style: const TextStyle(
-                            fontSize: 20,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
-                        ))),
+                    widget: LayoutBuilder(
+                      builder: (context, constraints) => CircleAvatar(
+                          radius: // half the size of the gauge
+                              MediaQuery.of(context).size.width * 0.28,
+                          backgroundColor: innerColor,
+                          child: Text(
+                            "Habit Strength\n${habitStrength.toStringAsFixed(0)}%",
+                            style: const TextStyle(
+                              fontSize: 20,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          )),
+                    )),
               ],
               showLabels: false,
               showTicks: false,

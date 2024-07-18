@@ -9,14 +9,19 @@ class HabitCardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool longDescription = habit.description.length > 40;
     return Card(
       color: theme.cardTheme.color,
       surfaceTintColor: theme.cardTheme.surfaceTintColor,
       shadowColor: theme.cardTheme.shadowColor,
       elevation: theme.cardTheme.elevation,
       child: ListTile(
-        title: Text(habit.name),
-        subtitle: Text(habit.description),
+        title: Text(
+          habit.name,
+        ),
+        subtitle: Text(longDescription
+            ? '${habit.description.substring(0, 40)}...'
+            : habit.description),
         trailing: Text(habit.daysToString()),
       ),
     );

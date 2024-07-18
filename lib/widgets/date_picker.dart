@@ -47,8 +47,23 @@ class _DatePickerState extends State<DatePicker> {
           ),
           child: IconButton(
               onPressed: () => showDatePicker(
+                    builder: (context, child) {
+                      return Theme(
+                        data: theme.copyWith(
+                          colorScheme: ColorScheme.light(
+                            primary: theme.primaryColor,
+                            onPrimary: Colors.white,
+                            //surface: theme.primaryColor,
+                            onSurface: Colors.black,
+                          ),
+                          dialogBackgroundColor: theme.primaryColor,
+                        ),
+                        child: child!,
+                      );
+                    },
                     context: context,
                     initialDate: startDate,
+                    //barrierColor: theme.primaryColor,
                     firstDate:
                         DateTime.now().subtract(const Duration(days: 365)),
                     lastDate: DateTime.now(),
