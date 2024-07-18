@@ -31,7 +31,7 @@ brew install cocoapods
 cd ios
 pod deintegrate
 # Install CocoaPods dependencies.
-pod update # run `pod install` in the `ios` directory.
+# pod update # run `pod install` in the `ios` directory.
 
 flutter pub get
 
